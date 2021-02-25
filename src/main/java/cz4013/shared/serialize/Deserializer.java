@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static cz4013.shared.serialize.Utils.serializableFields;
-import cz4013.java.shared.serialize.SerializingException;
+import cz4013.shared.serialize.SerializingException;
 
 public class Deserializer {
   public static Map<String, Class> EMPTY_TYPE_MAP = new HashMap<>();

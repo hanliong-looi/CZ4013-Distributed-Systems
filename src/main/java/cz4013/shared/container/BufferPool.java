@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-System.out.println("test");
 /**
  * A fixed-sized pool of {@link ByteBuffer}s.
  */
