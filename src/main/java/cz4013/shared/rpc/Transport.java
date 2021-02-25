@@ -8,8 +8,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
 
-import static cz4013.shared.serialization.Serializer.serialize;
-System.out.println("test");
+import static cz4013.shared.serialize.Serializer.serialize;
 /**
  * A UDP client.
  */

@@ -10,7 +10,6 @@ import java.util.UUID;
  *
  * @param <RespBody> type of response body
  */
-System.out.println("test");
 public class Response<RespBody> {
   public ResponseHeader header;
   public Optional<RespBody> body;

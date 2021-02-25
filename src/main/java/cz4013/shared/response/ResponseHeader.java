@@ -6,7 +6,6 @@ import java.util.UUID;
 /**
  * Header of a response: the corresponding request's ID and the response's status code.
  */
-System.out.println("test");
 public class ResponseHeader {
   public UUID uuid;
   public Status status;

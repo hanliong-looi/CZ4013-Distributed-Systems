@@ -8,7 +8,6 @@ import java.util.Objects;
  *
  * @param <ReqBody> type of request body
  */
-System.out.println("test");
 public class Request<ReqBody> {
   public RequestHeader header;
   public ReqBody body;

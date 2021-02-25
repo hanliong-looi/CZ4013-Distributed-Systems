@@ -7,8 +7,6 @@ import java.net.SocketAddress;
 /**
  * A UDP datagram: its sender and its content.
  */
-System.out.println("test");
-System.out.println("test");
 public class RawMessage implements AutoCloseable {
   public SocketAddress remote;
   public PooledByteBuffer payload;
