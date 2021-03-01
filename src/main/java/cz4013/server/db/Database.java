@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 public class Database {
     private HashMap<String, FacilityDetail> facDB = new HashMap<String, FacilityDetail>();
-    private HashMap<String, ArrayList<BookingDetail>> bookDB = new HashMap<String, ArrayList<BookingDetail>>();
+    private HashMap<String, ArrayList<ArrayList<BookingDetail>>> bookDB = new HashMap<String, ArrayList<ArrayList<BookingDetail>>>();
 
     /**
      * Adds a booking for a facility.
@@ -24,17 +24,18 @@ public class Database {
      * @param bookingDetail detail of the booking
      */
     public boolean addBooking(String facName, BookingDetail bookingDetail) {
+        int day = bookingDetail.day;
         if(bookDB.containsKey(facName)){
-            if(bookDB.get(facName).contains(bookingDetail)){
+            if(bookDB.get(facName).get(day-1).contains(bookingDetail)){
                 return false;
             }
             else{
-                bookDB.get(facName).add(bookingDetail);
+                bookDB.get(facName).get(day-1).add(bookingDetail);
                 return true;
             }
         }
         else{
-            bookDB.put(facName, new ArrayList<BookingDetail>());
+            bookDB.put(facName, new ArrayList<ArrayList<BookingDetail>>());
             bookDB.get(facName).add(bookingDetail);
             return true;
         }
