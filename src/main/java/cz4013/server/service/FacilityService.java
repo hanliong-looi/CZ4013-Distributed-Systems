@@ -45,6 +45,13 @@ public class FacilityService {
             return ViewFacilityAvailabilityResponse.failed("There is no such facility/ no bookings for this facility.");
         }
         else{
+            ArrayList<ArrayList<ArrayList<String>>> ar = new ArrayList<ArrayList<ArrayList<String>>>();
+            for(int i = 0; i < bookingList.size(); i++){
+                ar.add(new ArrayList<ArrayList<ArrayList<String>>>())
+                for(int j = 0; j < bookingList.get(i).size(); j++){
+                    //BookingDetail: facName, bookID, day, startHour, startMin, endHour, endMin
+                }
+            }
             return new ViewFacilityAvailabilityResponse(bookingList, "");
         }
 

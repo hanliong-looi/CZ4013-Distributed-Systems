@@ -5,6 +5,7 @@ import cz4013.shared.response.*;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -30,8 +31,10 @@ public class FacilityClient {
             new Response<ViewFacilityAvailabilityResponse>() {}
         );
         System.out.printf("Facility %s availability: \n", name);
+        System.out.println("Size of booking list response: " + Integer.toString(resp.bookingList.size()));
+        System.out.println("Size of booking list 2nd array response: " + Integer.toString(resp.bookingList.get(0).size()));
         for(int i=0; i<resp.bookingList.size(); i++){
-            System.out.printf("%s %s: \n", convertIntToDay(days.get(i)), resp.bookingList.get(i).get(0).bookingId);
+            System.out.printf("%s %s: \n", convertIntToDay(days.get(i)), resp.bookingList.get(0).get(0).bookingId);
         }
     }
 
@@ -71,18 +74,19 @@ public class FacilityClient {
     
     private ArrayList<Integer> askDays() {
         int choice = 0;
-        int i = 0;
         ArrayList<Integer> days = new ArrayList<Integer>();
         System.out.println("Please choose date (1-7 for Mon-Sun, 8 to cancel) = ");
         while(choice!=8){
+            choice = Util.safeReadInt();
             if(choice < 1 || choice > 8){
                 System.out.println("Choice must be 1-8!");
                 continue;
             }
-            int chosenDay = Util.safeReadInt();
-            days.set(i, chosenDay);
-            i++;
+            if(choice != 8){
+                days.add(choice);
+            }
         }
+        Collections.sort(days);
         return days;
     }
 }

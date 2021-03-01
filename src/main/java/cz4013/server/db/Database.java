@@ -25,7 +25,12 @@ public class Database {
         }
         bookDB.put("North Hill Gym", ar);
         BookingDetail bd = new BookingDetail("North Hill Gym", "ILOVEBOOKINGID", 1, 9, 30, 10, 30);
-        addBooking("North Hill Gym", bd);
+        if(addBooking("North Hill Gym", bd)){
+            System.out.println("DB successfully initialized");
+        }
+        else{
+            System.out.println("DB failed");
+        }
     }
 
     /**
@@ -67,7 +72,7 @@ public class Database {
         if(bookDB.containsKey(facName)){
             ArrayList<ArrayList<BookingDetail>> ar = new ArrayList<ArrayList<BookingDetail>>();
             for(int i = 0; i < days.size(); i++){
-                ar.add(bookDB.get(facName).get(days.get(i)));
+                ar.add(bookDB.get(facName).get(days.get(i)-1));
             }
             return ar;
         }
