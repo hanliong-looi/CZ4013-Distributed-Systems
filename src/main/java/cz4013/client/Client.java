@@ -15,7 +15,7 @@ import java.time.Instant;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static cz4013.shared.serialization.Deserializer.deserialize;
+import static cz4013.shared.serialize.Deserializer.deserialize;
 
 /**
  * This class acts as the transport layer in client side.

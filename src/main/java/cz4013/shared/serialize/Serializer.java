@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static cz4013.shared.serialize.Utils.resetBuffer;
-import static cz4013.java.shared.serialize.Utils.serializableFields;
+import static cz4013.shared.serialize.Utils.serializableFields;
 
 /**
  * Serializes an object.
