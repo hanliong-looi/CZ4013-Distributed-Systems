@@ -19,7 +19,13 @@ public class Database {
     //initialize the facilities in facDB and bookDB
     public Database(){
         facDB.put("North Hill Gym", null);
-        bookDB.put("North Hill Gym", null);
+        ArrayList<ArrayList<BookingDetail>> ar = new ArrayList<ArrayList<BookingDetail>>();
+        for(int i = 0; i < 7; i++){
+            ar.add(new ArrayList<BookingDetail>());
+        }
+        bookDB.put("North Hill Gym", ar);
+        BookingDetail bd = new BookingDetail("North Hill Gym", "ILOVEBOOKINGID", 1, 9, 30, 10, 30);
+        addBooking("North Hill Gym", bd);
     }
 
     /**

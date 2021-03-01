@@ -29,10 +29,31 @@ public class FacilityClient {
             new ViewFacilityAvailabilityRequest(name, days),
             new Response<ViewFacilityAvailabilityResponse>() {}
         );
-        System.out.printf("Facility %s availability: \n", resp.facilityName);
-        // for(int i=0; i<resp.bookingDetails.size(); i++){
-        //     System.out.printf("%s %d: \n", resp.bookingDetails.get(i), resp.bookingDetails.get(i).get(i));
-        // }
+        System.out.printf("Facility %s availability: \n", name);
+        for(int i=0; i<resp.bookingList.size(); i++){
+            System.out.printf("%s %s: \n", convertIntToDay(days.get(i)), resp.bookingList.get(i).get(0).bookingId);
+        }
+    }
+
+    private String convertIntToDay(int i){
+        switch(i){
+            case 1:
+                return "Mon";
+            case 2:
+                return "Tue";
+            case 3:
+                return "Wed";
+            case 4:
+                return "Thu";
+            case 5:
+                return "Fri";
+            case 6:
+                return "Sat";
+            case 7:
+                return "Sun";
+            default:
+                return "Default: day not found";
+        }
     }
 
     private String askFacilityName() {
