@@ -31,10 +31,13 @@ public class FacilityClient {
             new Response<ViewFacilityAvailabilityResponse>() {}
         );
         System.out.printf("Facility %s availability: \n", name);
-        System.out.println("Size of booking list response: " + Integer.toString(resp.bookingList.size()));
-        System.out.println("Size of booking list 2nd array response: " + Integer.toString(resp.bookingList.get(0).size()));
+        // System.out.println("Size of booking list response: " + Integer.toString(resp.bookingList.size()));
+        // System.out.println("Size of booking list 2nd array response: " + Integer.toString(resp.bookingList.get(0).size()));
         for(int i=0; i<resp.bookingList.size(); i++){
-            System.out.printf("%s %s: \n", convertIntToDay(days.get(i)), resp.bookingList.get(0).get(0).bookingId);
+            //First get(0) returns the list of bookings for that day
+            //Second get(0) returns the particular booking of that day
+            //Third get(0) returns the attribute of that booking 0 = startHour, 1 = startMin, 2 = endHour, 3 = endMin
+            System.out.printf("%s: %s \n", convertIntToDay(days.get(i)), resp.bookingList.get(0).get(0).get(0));
         }
     }
 

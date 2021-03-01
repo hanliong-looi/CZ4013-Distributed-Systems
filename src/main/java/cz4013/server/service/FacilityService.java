@@ -47,12 +47,19 @@ public class FacilityService {
         else{
             ArrayList<ArrayList<ArrayList<String>>> ar = new ArrayList<ArrayList<ArrayList<String>>>();
             for(int i = 0; i < bookingList.size(); i++){
-                ar.add(new ArrayList<ArrayList<ArrayList<String>>>())
+                ar.add(new ArrayList<ArrayList<String>>());
+
                 for(int j = 0; j < bookingList.get(i).size(); j++){
                     //BookingDetail: facName, bookID, day, startHour, startMin, endHour, endMin
+                    ArrayList<String> bookingDetail = new ArrayList<String>();
+                    bookingDetail.add(Integer.toString(bookingList.get(i).get(j).startHour));
+                    bookingDetail.add(Integer.toString(bookingList.get(i).get(j).startMin));
+                    bookingDetail.add(Integer.toString(bookingList.get(i).get(j).endHour));
+                    bookingDetail.add(Integer.toString(bookingList.get(i).get(j).endMin));
+                    ar.get(i).add(bookingDetail);
                 }
             }
-            return new ViewFacilityAvailabilityResponse(bookingList, "");
+            return new ViewFacilityAvailabilityResponse(ar, "");
         }
 
         // AccountDetail accountDetail = db.query(req.accountNumber);

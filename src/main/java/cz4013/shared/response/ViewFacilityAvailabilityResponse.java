@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import cz4013.server.entity.BookingDetail;
 
 public class ViewFacilityAvailabilityResponse {
-    public ArrayList<ArrayList<BookingDetail>> bookingList;
+    public ArrayList<ArrayList<ArrayList<String>>> bookingList;
     public String errorMessage;
     
     public ViewFacilityAvailabilityResponse(){
 
     }
 
-    public ViewFacilityAvailabilityResponse(ArrayList<ArrayList<BookingDetail>> bookingList, String errorMessage){
+    public ViewFacilityAvailabilityResponse(ArrayList<ArrayList<ArrayList<String>>> bookingList, String errorMessage){
         this.bookingList = bookingList;
         this.errorMessage = errorMessage;
     }
