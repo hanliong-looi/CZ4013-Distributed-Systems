@@ -10,82 +10,78 @@ import java.time.Duration;
 import java.util.Map;
 
 public class Main {
-  public static void main(String[] args) throws SocketException {
-    Map<String, String> env = System.getenv();
-    String clientHost = env.getOrDefault("CLIENT_HOST", "0.0.0.0");
-    String serverHost = env.getOrDefault("SERVER_HOST", "127.0.0.1");
-    int clientPort = Integer.parseInt(env.getOrDefault("CLIENT_PORT", "12741"));
-    int serverPort = Integer.parseInt(env.getOrDefault("SERVER_PORT", "12740"));
-    Duration timeout = Duration.ofSeconds(Integer.parseInt(env.getOrDefault("TIMEOUT_SEC", "5")));
-    int maxAttempts = Integer.parseInt(env.getOrDefault("MAX_ATTEMPTS", "5"));
-    DatagramSocket socket = new DatagramSocket(new InetSocketAddress(clientHost, clientPort));
-    socket.setSoTimeout((int) timeout.toMillis());
-    String MANUAL = "----------------------------------------------------------------\n" +
-      "Please choose a service by typing [1-8]:\n" +
-      "1: Open a new bank account\n" +
-      "2: Close a bank account\n" +
-      "3: Deposit to a bank account\n" +
-      "4: Withdraw from a bank account\n" +
-      "5: Monitor update from other accounts\n" +
-      "6: Query information from a bank account\n" +
-      "7: Pay maintenance fee from a bank account\n" +
-      "8: Print the manual\n" +
-      "0: Stop the client\n";
+    public static void main(String[] args) throws SocketException{
+        
+        //gets system env (inherits a clone environment of its parent process), return keys to values pairs
+        Map<String, String> env = System.getenv(); 
+        
+        //returns client host/server host; if no mapping, use 0.0.0.0/127.0.0.1
+        String clientHost = env.getOrDefault("CLIENT_HOST", "0.0.0.0");
+        String serverHost = env.getOrDefault("SERVER_HOST", "127.0.0.1");
 
-    BankClient bankClient = new BankClient(new Client(
-      new Transport(socket, new BufferPool(8192, 1024)),
-      new InetSocketAddress(serverHost, serverPort), maxAttempts));
+        //returns client and server port numbers
+        int clientPort = Integer.parseInt(env.getOrDefault("CLIENT_PORT", "12741"));
+        int serverPort = Integer.parseInt(env.getOrDefault("SERVER_PORT", "12740"));
 
-    boolean shouldStop = false;
-    System.out.print(MANUAL);
-    while (!shouldStop) {
-      int userChoice = askUserChoice();
-      try {
-        switch (userChoice) {
-          case 1:
-            bankClient.runOpenAccountService();
-            break;
-          case 2:
-            bankClient.runCloseAccountService();
-            break;
-          case 3:
-            bankClient.runDepositService();
-            break;
-          case 4:
-            bankClient.runWithdrawService();
-            break;
-          case 5:
-            bankClient.runMonitorService();
-            break;
-          case 6:
-            bankClient.runQueryService();
-            break;
-          case 7:
-            bankClient.runMaintenanceService();
-            break;
-          case 8:
-            System.out.println(MANUAL);
-            break;
-          case 0:
-            shouldStop = true;
-            break;
-          default:
-            System.out.println("Invalid choice!");
-            break;
+        //set timeout of 5 secs
+        Duration timeout = Duration.ofSeconds(Integer.parseInt(env.getOrDefault("TIMEOUT_SEC", "5")));
+        //set max no of attempts to connect
+        int maxAttempts = Integer.parseInt(env.getOrDefault("MAX_ATTEMPTS", "5"));
+
+        //Inetsocket: Creates a socket address from a hostname and a port number.
+        //Datagramsocket: Creates a datagram socket, bound to the specified local socket address.
+        DatagramSocket socket = new DatagramSocket(new InetSocketAddress(clientHost, clientPort));
+        
+        //call to receive() this DatagramSocket will block for 5 seconds
+        socket.setSoTimeout((int) timeout.toMillis());
+
+        String MANUAL = "----------------------------------------------------------------\n" +
+        "Please choose a service by typing [1-6]:\n" +
+        "1: View availability of a facility\n" +
+        "2: Book facility\n" +
+        "3: Change booking\n" +
+        "4: Monitor availability of a facility\n" +
+        "5: View facility information\n" +
+        "6: Print the manual\n" +
+        "0: Stop the client\n";
+        
+        FacilityClient facilityClient = new FacilityClient(new Client(
+            new Transport(socket, new BufferPool(8192, 1024)), 
+            new InetSocketAddress(serverHost, serverPort), maxAttempts)
+        );
+        
+        boolean shouldStop = false;
+        System.out.print(MANUAL);
+        while (!shouldStop) {
+            int userChoice = askUserChoice();
+            try {
+              switch (userChoice) {
+                case 1:
+                    facilityClient.runViewFacilityAvailability();
+                    break;
+                case 6:
+                    System.out.println(MANUAL);
+                    break;
+                case 0:
+                    shouldStop = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice!");
+                    break;
+              }
+            }catch (NoResponseException e) {
+            System.out.println("No response received.");
+            } catch (FailedRequestException e) {
+            System.out.printf("Failed to send request with error %s \n", e.status);
+          }
         }
-      } catch (NoResponseException e) {
-        System.out.println("No response received.");
-      } catch (FailedRequestException e) {
-        System.out.printf("Failed to send request with error %s \n", e.status);
-      }
+        Util.closeReader();
+        System.out.println("Stopping client...");
     }
-    Util.closeReader();
-    System.out.println("Stopping client...");
-  }
 
-  private static int askUserChoice() {
-    System.out.print("\n----------------------------------------------------------------\n" +
-      "Your choice = ");
-    return Util.safeReadInt();
-  }
+    private static int askUserChoice() {
+        System.out.print("\n----------------------------------------------------------------\n" +
+          "Your choice = ");
+        return Util.safeReadInt();
+    }
 }
