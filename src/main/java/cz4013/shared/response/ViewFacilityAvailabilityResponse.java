@@ -1,27 +1,23 @@
 package cz4013.shared.response;
 
+import java.util.ArrayList;
+
+import cz4013.server.entity.BookingDetail;
+
 public class ViewFacilityAvailabilityResponse {
-    public String facilityName;
-    //need to include availiability of the facility: array?
-    public String availability;
+    public ArrayList<ArrayList<BookingDetail>> bookingList;
     public String errorMessage;
     
     public ViewFacilityAvailabilityResponse(){
 
     }
 
-    public ViewFacilityAvailabilityResponse(String facilityName, String availability, String errorMessage){
-        this.facilityName = facilityName;
-        this.availability = availability;
+    public ViewFacilityAvailabilityResponse(ArrayList<ArrayList<BookingDetail>> bookingList, String errorMessage){
+        this.bookingList = bookingList;
         this.errorMessage = errorMessage;
     }
 
     public static ViewFacilityAvailabilityResponse failed(String errorMessage) {
-        return new ViewFacilityAvailabilityResponse("test", "not available", errorMessage);
+        return new ViewFacilityAvailabilityResponse(null, errorMessage);
     }
-    
-    @Override
-    public String toString() {
-        return "ViewFacilityAvailabilityResponse(" + facilityName + ", " + availability + ", " + errorMessage + ")";
-      }
 }
