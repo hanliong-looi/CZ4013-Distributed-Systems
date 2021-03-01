@@ -42,7 +42,8 @@ public class Main {
         "3: Change booking\n" +
         "4: Monitor availability of a facility\n" +
         "5: View facility information\n" +
-        "6: Print the manual\n" +
+        "6: Write review for facility\n" +
+        "7: Print the manual\n" +
         "0: Stop the client\n";
         
         FacilityClient facilityClient = new FacilityClient(new Client(
@@ -59,7 +60,7 @@ public class Main {
                 case 1:
                     facilityClient.runViewFacilityAvailability();
                     break;
-                case 6:
+                case 7:
                     System.out.println(MANUAL);
                     break;
                 case 0:
