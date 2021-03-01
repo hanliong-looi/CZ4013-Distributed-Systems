@@ -4,6 +4,7 @@ import cz4013.shared.request.*;
 import cz4013.shared.response.*;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Optional;
 
 /**
@@ -22,13 +23,16 @@ public class FacilityClient {
     public void runViewFacilityAvailability() {
         System.out.println("Please input the following information");
         String name = askFacilityName();
-        String days = askDays();
+        ArrayList<Integer> days = askDays();
         ViewFacilityAvailabilityResponse resp = client.request(
             "viewFacilityAvailability",
             new ViewFacilityAvailabilityRequest(name, days),
             new Response<ViewFacilityAvailabilityResponse>() {}
         );
-        System.out.printf("Facility %s is available on %s", resp.facilityName, resp.availability);
+        System.out.printf("Facility %s availability: \n", resp.facilityName);
+        // for(int i=0; i<resp.bookingDetails.size(); i++){
+        //     System.out.printf("%s %d: \n", resp.bookingDetails.get(i), resp.bookingDetails.get(i).get(i));
+        // }
     }
 
     private String askFacilityName() {
@@ -36,8 +40,20 @@ public class FacilityClient {
         return Util.readLine();
     }
     
-    private String askDays() {
-        System.out.print("Facility Name = ");
-        return Util.readLine();
+    private ArrayList<Integer> askDays() {
+        int choice = 0;
+        int i = 0;
+        ArrayList<Integer> days = new ArrayList<Integer>();
+        System.out.println("Please choose date (1-7 for Mon-Sun, 8 to cancel) = ");
+        while(choice!=8){
+            if(choice < 1 || choice > 8){
+                System.out.println("Choice must be 1-8!");
+                continue;
+            }
+            int chosenDay = Util.safeReadInt();
+            days.set(i, chosenDay);
+            i++;
+        }
+        return days;
     }
 }
