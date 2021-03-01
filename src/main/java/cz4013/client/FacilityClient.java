@@ -36,8 +36,16 @@ public class FacilityClient {
     }
 
     private String askFacilityName() {
-        System.out.print("Facility Name = ");
-        return Util.readLine();
+        int choice = 0;
+        String str = "";
+        System.out.print("----------------------------------------------------------------\n" +
+        "Please choose a Facility\n" +
+        "1: North Hill Gym\n");
+        choice = Util.safeReadInt();
+        if(choice == 1){
+            str = "North Hill Gym";
+        } 
+        return str;
     }
     
     private ArrayList<Integer> askDays() {
