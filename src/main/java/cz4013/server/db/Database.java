@@ -16,6 +16,18 @@ public class Database {
     private HashMap<String, FacilityDetail> facDB = new HashMap<String, FacilityDetail>();
     private HashMap<String, ArrayList<ArrayList<BookingDetail>>> bookDB = new HashMap<String, ArrayList<ArrayList<BookingDetail>>>();
 
+    //initialize the facilities in facDB and bookDB
+    public Database(){
+        facDB.put("North Hill Gym", null);
+        ArrayList<ArrayList<BookingDetail>> ar = new ArrayList<ArrayList<BookingDetail>>();
+        for(int i = 0; i < 7; i++){
+            ar.add(new ArrayList<BookingDetail>());
+        }
+        bookDB.put("North Hill Gym", ar);
+        BookingDetail bd = new BookingDetail("North Hill Gym", "ILOVEBOOKINGID", 1, 9, 30, 10, 30);
+        addBooking("North Hill Gym", bd);
+    }
+
     /**
      * Adds a booking for a facility.
      * If the booking already exists, it will return false, meaning the booking has failed.
@@ -35,21 +47,29 @@ public class Database {
             }
         }
         else{
-            bookDB.put(facName, new ArrayList<ArrayList<BookingDetail>>());
-            bookDB.get(facName).add(bookingDetail);
+            ArrayList<ArrayList<BookingDetail>> ar = new ArrayList<ArrayList<BookingDetail>>();
+            for(int i = 0; i < 7; i++){
+                ar.add(new ArrayList<BookingDetail>());
+            }
+            ar.get(bookingDetail.day-1).add(bookingDetail);
+            bookDB.put(facName, ar);
             return true;
         }
     }
 
     /**
-     * Queries all bookings for a facility
+     * Queries all bookings for a facility for the particular days
      * Returns the list of bookings for that facility
      *
      * @param facName name of facility
      */
-    public ArrayList<BookingDetail> getBookings(String facName){
+    public ArrayList<ArrayList<BookingDetail>> getBookings(String facName, ArrayList<Integer> days){
         if(bookDB.containsKey(facName)){
-            return bookDB.get(facName);
+            ArrayList<ArrayList<BookingDetail>> ar = new ArrayList<ArrayList<BookingDetail>>();
+            for(int i = 0; i < days.size(); i++){
+                ar.add(bookDB.get(facName).get(days.get(i)));
+            }
+            return ar;
         }
         else{
             return null;
@@ -65,8 +85,8 @@ public class Database {
      */
     public boolean deleteBooking(String facName, BookingDetail bookingDetail){
         if(bookDB.containsKey(facName)){
-            if(bookDB.get(facName).contains(bookingDetail)){
-                int index = bookDB.get(facName).indexOf(bookingDetail);
+            if(bookDB.get(facName).get(bookingDetail.day-1).contains(bookingDetail)){
+                int index = bookDB.get(facName).get(bookingDetail.day-1).indexOf(bookingDetail);
                 bookDB.get(facName).remove(index);
                 return true;
             }

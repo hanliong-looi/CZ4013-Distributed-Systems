@@ -40,7 +40,22 @@ public class FacilityService {
    * @return the response after processing the given request
    */
     public ViewFacilityAvailabilityResponse processViewFacilityAvailability(ViewFacilityAvailabilityRequest req) {
-        ArrayList<BookingDetail> bookingList = db.getBookings(req.facName);
-        return null;
+        ArrayList<ArrayList<BookingDetail>> bookingList = db.getBookings(req.facName, req.days);
+        if(bookingList == null){
+            return ViewFacilityAvailabilityResponse.failed("There is no such facility/ no bookings for this facility.");
+        }
+        else{
+            return new ViewFacilityAvailabilityResponse(bookingList, "");
+        }
+
+        // AccountDetail accountDetail = db.query(req.accountNumber);
+        // if (accountDetail == null) {
+        // return QueryResponse.failed("This account number doesn't exist");
+        // }
+        // if (!req.password.equals(accountDetail.password)) {
+        // return QueryResponse.failed("Wrong password");
+        // }
+        // broadcast(String.format("Someone queries account %d", req.accountNumber));
+        // return new QueryResponse(accountDetail.name, accountDetail.currency, accountDetail.amount, true, "");
     }
 }
