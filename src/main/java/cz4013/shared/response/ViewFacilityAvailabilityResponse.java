@@ -2,8 +2,6 @@ package cz4013.shared.response;
 
 import java.util.ArrayList;
 
-import cz4013.server.entity.BookingDetail;
-
 public class ViewFacilityAvailabilityResponse {
     public ArrayList<ArrayList<ArrayList<String>>> bookingList;
     public String errorMessage;

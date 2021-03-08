@@ -7,6 +7,8 @@ import java.util.ArrayList;
  */
 public class FacilityDetail {
     public String name;
+    public String operatingHours;
+    public String address;
     public ArrayList<String> reviews;
 
     /**
@@ -26,7 +28,7 @@ public class FacilityDetail {
 
     @Override
     public String toString() {
-        String str = "FacilityDetail(Name: " + name + ", Reviews: \n";
+        String str = "FacilityDetail(Name: " + name + ", Operating Hours: " + operatingHours + ", Address: " + address + ", Reviews: \n";
         for(int i = 0; i < reviews.size(); i++){
             str = str + reviews.get(i) + ",\n";
         }

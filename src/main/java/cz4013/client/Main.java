@@ -36,7 +36,7 @@ public class Main {
         socket.setSoTimeout((int) timeout.toMillis());
 
         String MANUAL = "----------------------------------------------------------------\n" +
-        "Please choose a service by typing [1-6]:\n" +
+        "Please choose a service by typing [1-7]:\n" +
         "1: View availability of a facility\n" +
         "2: Book facility\n" +
         "3: Change booking\n" +

@@ -24,7 +24,7 @@ public class Database {
             ar.add(new ArrayList<BookingDetail>());
         }
         bookDB.put("North Hill Gym", ar);
-        BookingDetail bd = new BookingDetail("North Hill Gym", "ILOVEBOOKINGID", 1, 9, 30, 10, 30);
+        BookingDetail bd = new BookingDetail("North Hill Gym", 123456, 1, 9, 30, 10, 30, 1.0);
         if(addBooking("North Hill Gym", bd)){
             System.out.println("DB successfully initialized");
         }
@@ -116,6 +116,23 @@ public class Database {
         }
         else{
             return null;
+        }
+    }
+
+    /**
+     * Adds a review for a facility.
+     * If the booking does not exist, it will return false, meaning the deletion has failed.
+     *
+     * @param facName name of facility
+     * @param review detail of the booking to be deleted
+     */
+    public boolean addReview(String facName, String review){
+        if(facDB.containsKey(facName)){
+            facDB.get(facName).reviews.add(review);
+            return true;
+        }
+        else{
+            return false;
         }
     }
 }

@@ -5,12 +5,13 @@ package cz4013.server.entity;
  */
 public class BookingDetail {
     public String facName;
-    public String bookingId;
+    public int bookingId;
     public int day;
     public int startHour;
     public int startMin;
     public int endHour;
     public int endMin;
+    public double duration;
 
     /**
      * Constructs an entry for a booking in DB.
@@ -20,7 +21,7 @@ public class BookingDetail {
      * @param day     day of the booking (e.g 1 = Mon, 2 = Tue, ..., 7 = Sun)
      * @param time    time of the booking (e.g "0930 - 1030")
      */
-    public BookingDetail(String facName, String bookingId, int day, int startHour, int startMin, int endHour, int endMin) {
+    public BookingDetail(String facName, int bookingId, int day, int startHour, int startMin, int endHour, int endMin, double duration) {
         this.facName = facName;
         this.bookingId = bookingId;
         this.day = day;
@@ -28,13 +29,14 @@ public class BookingDetail {
         this.startMin = startMin;
         this.endHour = endHour;
         this.endMin = endMin;
+        this.duration = duration;
     }
 
     @Override
     public String toString() {
         String str = "BookingDetail(Facility Name: " + facName + ", BookingID: " + bookingId + ", Day: " + Integer.toString(day) + 
         ", Start Time: " + Integer.toString(startHour) + ": " + Integer.toString(startMin) +
-        ", End Time: " + Integer.toString(endHour) + ": " + Integer.toString(endMin);
+        ", End Time: " + Integer.toString(endHour) + ": " + Integer.toString(endMin) + ", Duration: " + Double.toString(duration) + " Hours.";
         return str;
     }
 }
