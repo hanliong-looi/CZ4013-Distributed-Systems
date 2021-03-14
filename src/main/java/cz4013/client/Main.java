@@ -18,7 +18,7 @@ public class Main {
         //returns client host/server host; if no mapping, use 0.0.0.0/127.0.0.1
         String clientHost = env.getOrDefault("CLIENT_HOST", "0.0.0.0");
         String serverHost = env.getOrDefault("SERVER_HOST", "127.0.0.1");
-
+        
         //returns client and server port numbers
         int clientPort = Integer.parseInt(env.getOrDefault("CLIENT_PORT", "12741"));
         int serverPort = Integer.parseInt(env.getOrDefault("SERVER_PORT", "12740"));

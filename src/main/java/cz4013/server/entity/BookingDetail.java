@@ -9,8 +9,8 @@ public class BookingDetail {
     public int day;
     public int startHour;
     public int startMin;
-    public int endHour;
-    public int endMin;
+    // public int endHour;
+    // public int endMin;
     public double duration;
 
     /**
@@ -21,14 +21,14 @@ public class BookingDetail {
      * @param day     day of the booking (e.g 1 = Mon, 2 = Tue, ..., 7 = Sun)
      * @param time    time of the booking (e.g "0930 - 1030")
      */
-    public BookingDetail(String facName, int bookingId, int day, int startHour, int startMin, int endHour, int endMin, double duration) {
+    public BookingDetail(String facName, int bookingId, int day, int startHour, int startMin, /*int endHour, int endMin,*/ double duration) {
         this.facName = facName;
         this.bookingId = bookingId;
         this.day = day;
         this.startHour = startHour;
         this.startMin = startMin;
-        this.endHour = endHour;
-        this.endMin = endMin;
+        // this.endHour = endHour;
+        // this.endMin = endMin;
         this.duration = duration;
     }
 
@@ -36,7 +36,7 @@ public class BookingDetail {
     public String toString() {
         String str = "BookingDetail(Facility Name: " + facName + ", BookingID: " + bookingId + ", Day: " + Integer.toString(day) + 
         ", Start Time: " + Integer.toString(startHour) + ": " + Integer.toString(startMin) +
-        ", End Time: " + Integer.toString(endHour) + ": " + Integer.toString(endMin) + ", Duration: " + Double.toString(duration) + " Hours.";
+        /*", End Time: " + Integer.toString(endHour) + ": " + Integer.toString(endMin) +*/ ", Duration: " + Double.toString(duration) + " Hours.";
         return str;
     }
 }

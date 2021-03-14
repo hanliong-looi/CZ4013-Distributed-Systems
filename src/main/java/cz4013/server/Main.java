@@ -39,7 +39,11 @@ public class Main {
         FacilityService facService = new FacilityService(serverTransport);
         LruCache cache = new LruCache<>(atLeastOnce ? 0: 1024);
         Router router = new Router(cache);
-        router.bind("viewFacilityAvailability", facService::processViewFacilityAvailability, new ViewFacilityAvailabilityRequest(){});
+        router.bind("viewFacilityAvailability", facService::processViewFacilityAvailability, new ViewFacilityAvailabilityRequest(){})
+            .bind("viewFacilityDetail", facService::processViewFacilityDetail, new ViewFacilityDetailRequest(){})
+            .bind("addFacilityReview", facService::processAddFacilityReview, new AddFacilityReviewRequest(){})
+            .bind("addFacilityBooking", facService::processAddFacilityBooking, new AddFacilityBookingRequest(){})
+            .bind("modifyFacilityBooking", facService::processModifyFacilityBooking, new ModifyFacilityBookingRequest(){});
 
         for(; ; ){
             try(RawMessage req = serverTransport.recv()){

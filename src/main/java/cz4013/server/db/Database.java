@@ -9,7 +9,7 @@ import java.util.HashMap;
 /**
  * An in-memory key-value based database which records of facilities and their respective bookings.
  * For facility DB, key =  facility name, value = FacilityDetail
- * For booking DB, key = facility name, value = BookingDetail
+ * For booking DB, key = facility name, value = ArrayList<ArrayList<BookingDetail>> (Outer array = 7 days of booking, inner array = all bookings in that day)
  */
 
 public class Database {
@@ -24,7 +24,7 @@ public class Database {
             ar.add(new ArrayList<BookingDetail>());
         }
         bookDB.put("North Hill Gym", ar);
-        BookingDetail bd = new BookingDetail("North Hill Gym", 123456, 1, 9, 30, 10, 30, 1.0);
+        BookingDetail bd = new BookingDetail("North Hill Gym", 123456, 1, 9, 30, /*10, 30,*/ 1.0);
         if(addBooking("North Hill Gym", bd)){
             System.out.println("DB successfully initialized");
         }
@@ -75,6 +75,26 @@ public class Database {
                 ar.add(bookDB.get(facName).get(days.get(i)-1));
             }
             return ar;
+        }
+        else{
+            return null;
+        }
+    }
+
+    /**
+     * Queries all bookings for a facility for the particular days
+     * Returns the list of bookings for that facility
+     *
+     * @param facName name of facility
+     */
+    public BookingDetail getOneBooking(String facName, int day, int bookingId){
+        if(bookDB.containsKey(facName)){
+            for(int i = 0; i < bookDB.get(facName).get(day-1).size(); i++){
+                if(bookDB.get(facName).get(day-1).get(i).bookingId == bookingId){
+                    return bookDB.get(facName).get(day-1).get(i);
+                }
+            }
+            return null;
         }
         else{
             return null;

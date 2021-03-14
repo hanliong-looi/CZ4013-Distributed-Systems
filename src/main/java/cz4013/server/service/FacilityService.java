@@ -58,7 +58,7 @@ public class FacilityService {
      * @return the response after processing the given request
      */
     public AddFacilityReviewResponse processAddFacilityReview(AddFacilityReviewRequest req) {
-        boolean success = db.addReview(req.facName, req.review)
+        boolean success = db.addReview(req.facName, req.review);
         if(success){
             return new AddFacilityReviewResponse(req.facName, req.review, "");
         }
@@ -79,20 +79,43 @@ public class FacilityService {
             return ViewFacilityAvailabilityResponse.failed("There is no such facility/ no bookings for this facility.");
         } else {
             ArrayList<ArrayList<ArrayList<String>>> ar = new ArrayList<ArrayList<ArrayList<String>>>();
+            int startHour, startMin, endHour, endMin;
             for (int i = 0; i < bookingList.size(); i++) {
                 ar.add(new ArrayList<ArrayList<String>>());
 
                 for (int j = 0; j < bookingList.get(i).size(); j++) {
                     // BookingDetail: facName, bookID, day, startHour, startMin, endHour, endMin
                     ArrayList<String> bookingDetail = new ArrayList<String>();
-                    bookingDetail.add(Integer.toString(bookingList.get(i).get(j).startHour));
-                    bookingDetail.add(Integer.toString(bookingList.get(i).get(j).startMin));
-                    bookingDetail.add(Integer.toString(bookingList.get(i).get(j).endHour));
-                    bookingDetail.add(Integer.toString(bookingList.get(i).get(j).endMin));
+
+                    startHour = bookingList.get(i).get(j).startHour;
+                    startMin = bookingList.get(i).get(j).startMin;
+                    bookingDetail.add(Integer.toString(startHour));
+                    bookingDetail.add(Integer.toString(startMin));
+
+                    double duration = bookingList.get(i).get(j).duration;
+                    String durationStr = String.valueOf(duration);
+                    String[] time = durationStr.split(".");
+                    if(time[1] == "30"){
+                        if(startMin == 30){
+                            endHour = startHour + (int)Math.floor(duration) + 1;
+                            endMin = 0;
+                        }
+                        else{
+                            endHour = startHour;
+                            endMin = 30;
+                        }
+                    }
+                    else{
+                        endHour = startHour + (int)Math.floor(duration);
+                        endMin = startMin;
+                    }
+
+                    bookingDetail.add(Integer.toString(endHour));
+                    bookingDetail.add(Integer.toString(endMin));
                     ar.get(i).add(bookingDetail);
                 }
             }
-            broadcast(String.format("Someone queried facility availability for %s ", req.facName));
+            // broadcast(String.format("Someone queried facility availability for %s ", req.facName));
             return new ViewFacilityAvailabilityResponse(ar, "");
         }
     }
@@ -105,7 +128,16 @@ public class FacilityService {
      */
     public AddFacilityBookingResponse processAddFacilityBooking(AddFacilityBookingRequest req) {
         int bookingId = nextAvailableBookingId++;
-        BookingDetail bookingDetail =  new BookingDetail(req.facName, bookingId, req.day, req.startHour, req.startMin, req.endHour, req.endMin);
+        
+        double duration = req.endHour - req.startHour;
+        if(req.endMin - req.startMin == 30){
+            duration += 0.5;
+        }
+        else if(req.startMin - req.endMin == 30){
+            duration -= 0.5;
+        }
+
+        BookingDetail bookingDetail =  new BookingDetail(req.facName, bookingId, req.day, req.startHour, req.startMin, duration/*req.endHour, req.endMin*/);
         boolean success = db.addBooking(req.facName, bookingDetail);
         if(success){
             return AddFacilityBookingResponse.failed("Booking failed.");
@@ -123,7 +155,10 @@ public class FacilityService {
      */
     public ModifyFacilityBookingResponse processModifyFacilityBooking(ModifyFacilityBookingRequest req) {
         // if offset is positive, means client is requesting to push the booking timing to a later time
-        BookingDetail oldBookingDetail = new BookingDetail(req.facName, req.bookingId, req.day, req.startHour, req.startMin, req.endHour, req.endMin);
+        BookingDetail oldBookingDetail = db.getOneBooking(req.facName, req.day, req.bookingId);
+        if(oldBookingDetail == null){
+            return ModifyFacilityBookingResponse.failed("Booking doesn't exist");
+        }
         boolean deleteSuccess = db.deleteBooking(req.facName, oldBookingDetail);
         if(!deleteSuccess){
             return ModifyFacilityBookingResponse.failed("Booking modification failed.");
@@ -162,17 +197,17 @@ public class FacilityService {
         }
     }
 
-    private void broadcast(String info) {
-        purgeListeners();
-        System.out.println(info);
-        Response<MonitorUpdateResponse> resp = new Response<>(new ResponseHeader(UUID.randomUUID(), Status.OK),
-                Optional.of(new MonitorUpdateResponse(info)));
-        listeners.forEach((socketAddress, x) -> {
-            transport.send(socketAddress, resp);
-        });
-    }
+    // private void broadcast(String info) {
+    //     purgeListeners();
+    //     System.out.println(info);
+    //     Response<MonitorUpdateResponse> resp = new Response<>(new ResponseHeader(UUID.randomUUID(), Status.OK),
+    //             Optional.of(new MonitorUpdateResponse(info)));
+    //     listeners.forEach((socketAddress, x) -> {
+    //         transport.send(socketAddress, resp);
+    //     });
+    // }
 
-    private void purgeListeners() {
-        listeners.entrySet().removeIf(x -> x.getValue().isBefore(Instant.now()));
-    }
+    // private void purgeListeners() {
+    //     listeners.entrySet().removeIf(x -> x.getValue().isBefore(Instant.now()));
+    // }
 }
