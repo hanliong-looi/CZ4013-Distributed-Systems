@@ -60,7 +60,7 @@ public class FacilityService {
     public AddFacilityReviewResponse processAddFacilityReview(AddFacilityReviewRequest req) {
         boolean success = db.addReview(req.facName, req.review);
         if(success){
-            return new AddFacilityReviewResponse(req.facName, req.review, "");
+            return new AddFacilityReviewResponse(true, "");
         }
         else{
             return AddFacilityReviewResponse.failed("There is no such facility.");
@@ -93,31 +93,46 @@ public class FacilityService {
                     bookingDetail.add(Integer.toString(startMin));
 
                     double duration = bookingList.get(i).get(j).duration;
-                    String durationStr = String.valueOf(duration);
-                    String[] time = durationStr.split(".");
-                    if(time[1] == "30"){
-                        if(startMin == 30){
-                            endHour = startHour + (int)Math.floor(duration) + 1;
-                            endMin = 0;
-                        }
-                        else{
-                            endHour = startHour;
-                            endMin = 30;
-                        }
-                    }
-                    else{
-                        endHour = startHour + (int)Math.floor(duration);
-                        endMin = startMin;
-                    }
+                    ArrayList<String> endTime = convertDurationToEndTime(startHour, startMin, duration);
 
-                    bookingDetail.add(Integer.toString(endHour));
-                    bookingDetail.add(Integer.toString(endMin));
+                    bookingDetail.add(endTime.get(0));
+                    bookingDetail.add(endTime.get(1));
                     ar.get(i).add(bookingDetail);
                 }
             }
             // broadcast(String.format("Someone queried facility availability for %s ", req.facName));
             return new ViewFacilityAvailabilityResponse(ar, "");
         }
+    }
+
+    /**
+     * Processes a request to view all bookings made by the client.
+     *
+     * @param req the request to be processed
+     * @return the response after processing the given request
+     */
+    public ViewPersonalBookingsResponse processViewPersonalBookings(ViewPersonalBookingsRequest req){
+        ArrayList<ArrayList<String>> resp = new ArrayList<ArrayList<String>>();
+        for(int i = 0; i < req.length; i++){
+            String facName = req.facNameList.get(i);
+            int day = req.dayList.get(i);
+            int id = req.idList.get(i);
+            BookingDetail bd = db.getOneBooking(facName, day, id);
+            if(bd == null){
+                continue;
+            }
+            ArrayList<String> bdStr = new ArrayList<String>();
+            bdStr.add(facName);
+            bdStr.add(Integer.toString(id));
+            bdStr.add(Integer.toString(day));
+            bdStr.add(Integer.toString(bd.startHour));
+            bdStr.add(Integer.toString(bd.startMin));
+            ArrayList<String> endTime = convertDurationToEndTime(bd.startHour, bd.startMin, bd.duration);
+            bdStr.add(endTime.get(0));
+            bdStr.add(endTime.get(1));
+            resp.add(bdStr);
+        }
+        return new ViewPersonalBookingsResponse(resp, "");
     }
     
     /**
@@ -195,6 +210,31 @@ public class FacilityService {
         else{
             return ModifyFacilityBookingResponse.failed("Booking modification failed.");
         }
+    }
+
+    private ArrayList<String> convertDurationToEndTime(int startHour, int startMin, Double duration){
+        ArrayList<String> endTime = new ArrayList<String>();
+        int endHour, endMin;
+        String durationStr = String.valueOf(duration);
+        int indexOfDecimal = durationStr.indexOf(".");
+        String minStr = durationStr.substring(indexOfDecimal);
+        if(minStr == "30"){
+            if(startMin == 30){
+                endHour = startHour + (int)Math.floor(duration) + 1;
+                endMin = 0;
+            }
+            else{
+                endHour = startHour;
+                endMin = 30;
+            }
+        }
+        else{
+            endHour = startHour + (int)Math.floor(duration);
+            endMin = startMin;
+        }
+        endTime.add(Integer.toString(endHour));
+        endTime.add(Integer.toString(endMin));
+        return endTime;
     }
 
     // private void broadcast(String info) {

@@ -17,8 +17,10 @@ public class FacilityDetail {
      * @param name     name of the facility
      * @param reviews  list of reviews for the facility
      */
-    public FacilityDetail(String name, ArrayList<String> reviews) {
+    public FacilityDetail(String name, String operatingHours, String address, ArrayList<String> reviews) {
         this.name = name;
+        this.operatingHours = operatingHours;
+        this.address = address;
         this.reviews = reviews;
     }
 

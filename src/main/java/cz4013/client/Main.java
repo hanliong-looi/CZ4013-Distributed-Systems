@@ -52,13 +52,19 @@ public class Main {
         );
         
         boolean shouldStop = false;
-        System.out.print(MANUAL);
         while (!shouldStop) {
+            System.out.print(MANUAL);
             int userChoice = askUserChoice();
             try {
               switch (userChoice) {
                 case 1:
                     facilityClient.runViewFacilityAvailability();
+                    break;
+                case 5:
+                    facilityClient.runViewFacilityDetail();
+                    break;
+                case 6:
+                    facilityClient.runAddFacilityReview();
                     break;
                 case 7:
                     System.out.println(MANUAL);
@@ -70,11 +76,14 @@ public class Main {
                     System.out.println("Invalid choice!");
                     break;
               }
-            }catch (NoResponseException e) {
-            System.out.println("No response received.");
-            } catch (FailedRequestException e) {
-            System.out.printf("Failed to send request with error %s \n", e.status);
-          }
+              backToManual();
+            }
+            catch (NoResponseException e) {
+                System.out.println("No response received.");
+            }
+            catch (FailedRequestException e) {
+                System.out.printf("Failed to send request with error %s \n", e.status);
+            }
         }
         Util.closeReader();
         System.out.println("Stopping client...");
@@ -84,5 +93,19 @@ public class Main {
         System.out.print("\n----------------------------------------------------------------\n" +
           "Your choice = ");
         return Util.safeReadInt();
+    }
+
+    private static void backToManual(){
+        while(true){
+            System.out.println("\n----------------------------------------------------------------");
+            System.out.println("Enter '1' to go back to the menu");
+            int choice = Util.safeReadInt();
+            if(choice == 1){
+                return;
+            }
+            else{
+                System.out.println("Invalid input!");
+            }
+        }
     }
 }

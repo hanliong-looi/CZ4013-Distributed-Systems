@@ -18,19 +18,26 @@ public class Database {
 
     //initialize the facilities in facDB and bookDB
     public Database(){
-        facDB.put("North Hill Gym", null);
+        // Creating facilities
+        System.out.println("Initializing facilities in DB...");
+        FacilityDetail fd = new FacilityDetail("North Hill Gym", "0830 - 2230", "60 Nanyang Crescent, Lvl 3, Block 19A Binjai Hall", new ArrayList<String>());
+        facDB.put("North Hill Gym", fd);
+        addReview("North Hill Gym", "Very lovely gym <3");
+
+        //Creating bookings
+        System.out.println("Initializing bookings in DB...");
         ArrayList<ArrayList<BookingDetail>> ar = new ArrayList<ArrayList<BookingDetail>>();
         for(int i = 0; i < 7; i++){
             ar.add(new ArrayList<BookingDetail>());
         }
         bookDB.put("North Hill Gym", ar);
         BookingDetail bd = new BookingDetail("North Hill Gym", 123456, 1, 9, 30, /*10, 30,*/ 1.0);
-        if(addBooking("North Hill Gym", bd)){
-            System.out.println("DB successfully initialized");
+        if(!addBooking("North Hill Gym", bd)){
+            System.out.println("Adding of booking for NH Gym failed");
         }
-        else{
-            System.out.println("DB failed");
-        }
+
+        // End Initiliazation
+        System.out.println("DB Initialized");
     }
 
     /**

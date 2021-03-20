@@ -41,6 +41,7 @@ public class Main {
         Router router = new Router(cache);
         router.bind("viewFacilityAvailability", facService::processViewFacilityAvailability, new ViewFacilityAvailabilityRequest(){})
             .bind("viewFacilityDetail", facService::processViewFacilityDetail, new ViewFacilityDetailRequest(){})
+            .bind("viewPersonalBookings", facService::processViewPersonalBookings, new ViewPersonalBookingsRequest(){})
             .bind("addFacilityReview", facService::processAddFacilityReview, new AddFacilityReviewRequest(){})
             .bind("addFacilityBooking", facService::processAddFacilityBooking, new AddFacilityBookingRequest(){})
             .bind("modifyFacilityBooking", facService::processModifyFacilityBooking, new ModifyFacilityBookingRequest(){});
