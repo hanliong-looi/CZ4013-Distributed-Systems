@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch schedule",
+            "request": "launch",
+            "mainClass": "cz4013.client.schedule",
+            "projectName": "cz4013"
+        },
+        {
+            "type": "java",
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}"
@@ -23,6 +30,6 @@
             "request": "launch",
             "mainClass": "cz4013.server.Main",
             "projectName": "cz4013"
-        },
+        }
     ]
 }

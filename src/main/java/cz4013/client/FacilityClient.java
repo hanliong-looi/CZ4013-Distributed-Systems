@@ -41,7 +41,14 @@ public class FacilityClient {
             //First get(0) returns the list of bookings for that day
             //Second get(0) returns the particular booking of that day
             //Third get(0) returns the attribute of that booking 0 = startHour, 1 = startMin, 2 = endHour, 3 = endMin
+            
             System.out.printf("%s: %s \n", convertIntToDay(days.get(i)), resp.bookingList.get(0).get(0).get(0));
+            
+            
+            //for testing
+            System.out.printf("First get: %s \n", resp.bookingList.get(0));
+            System.out.printf("Second get: %s \n", resp.bookingList.get(0).get(0));
+            System.out.printf("Third get: %s \n", resp.bookingList.get(0).get(0).get(0));
         }
     }
 
