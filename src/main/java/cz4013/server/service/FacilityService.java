@@ -79,12 +79,12 @@ public class FacilityService {
             return ViewFacilityAvailabilityResponse.failed("There is no such facility/ no bookings for this facility.");
         } else {
             ArrayList<ArrayList<ArrayList<String>>> ar = new ArrayList<ArrayList<ArrayList<String>>>();
-            int startHour, startMin, endHour, endMin;
+            int startHour, startMin;
             for (int i = 0; i < bookingList.size(); i++) {
                 ar.add(new ArrayList<ArrayList<String>>());
 
                 for (int j = 0; j < bookingList.get(i).size(); j++) {
-                    // BookingDetail: facName, bookID, day, startHour, startMin, endHour, endMin
+                    // Content of inner most array: facName, bookID, day, startHour, startMin, endHour, endMin, duration
                     ArrayList<String> bookingDetail = new ArrayList<String>();
 
                     startHour = bookingList.get(i).get(j).startHour;
@@ -97,6 +97,7 @@ public class FacilityService {
 
                     bookingDetail.add(endTime.get(0));
                     bookingDetail.add(endTime.get(1));
+                    bookingDetail.add(Double.toString(duration));
                     ar.get(i).add(bookingDetail);
                 }
             }
