@@ -60,6 +60,12 @@ public class Main {
                 case 1:
                     facilityClient.runViewFacilityAvailability();
                     break;
+                case 2:
+                    facilityClient.runAddFacilityBooking();
+                    break;
+                case 3:
+                    facilityClient.runModifyFacilityBooking();
+                    break;
                 case 5:
                     facilityClient.runViewFacilityDetail();
                     break;

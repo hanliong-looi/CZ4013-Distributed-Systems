@@ -26,8 +26,8 @@ public class schedule {
         ArrayList<String> bookingDetail = new ArrayList<String>();
         bookingDetail.add("15");
         bookingDetail.add("00");
-        bookingDetail.add("16");
-        bookingDetail.add("30");
+        bookingDetail.add("17");
+        bookingDetail.add("00");
         bookingList.get(0).add(bookingDetail);
 
         // System.out.printf("First get: %s \n", bookingList.get(0));
@@ -36,8 +36,8 @@ public class schedule {
 
         //try new method
         //String alignFormat = " %-10s |";
-        System.out.format("\n");
         // for table design
+        System.out.format("\n");
         System.out.format("+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+");
         System.out.format("\n");
 
@@ -106,6 +106,13 @@ public class schedule {
                 }
         }
         System.out.print("\n");
+
+        String s = "0930";
+        System.out.print(s.substring(0,2) + "\n");
+        System.out.print(Integer.parseInt(s.substring(0,2)) + "\n");
+        System.out.print(s.substring(2,4) + "\n");
+        System.out.print(Integer.parseInt(s.substring(2,4)) + "\n");
+        System.out.print(Integer.parseInt(s));
     }
 
     private static float getDuration(ArrayList<ArrayList<ArrayList<String>>> bookingList) {
