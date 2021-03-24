@@ -80,10 +80,10 @@ public class FacilityClient {
                             count = (int)(duration/0.5);
                             //print 'x' if slot is booked
                             //while looping through timeslots, if timeslot matches the booking start hour
-                            if((Math.floor(countHour) == Float.parseFloat(resp.bookingList.get(i).get(p).get(3))))
+                            if((Math.floor(countHour) == Float.parseFloat(resp.bookingList.get(i).get(p).get(0))))
                             {
                                 //check if start min is 00 and that the current timeslot min is 00
-                                if(resp.bookingList.get(i).get(p).get(4) == "00" && countMin%2==0)
+                                if(resp.bookingList.get(i).get(p).get(1) == "00" && countMin%2==0)
                                 {
                                     //printing 'x' for the number of slots booked
                                     for(int k=0; k < count; k++)
@@ -91,7 +91,7 @@ public class FacilityClient {
                                     j+=count;
                                 }   
                                 //check if start min is 30 and that the current timeslot min is 30
-                                else if(resp.bookingList.get(i).get(p).get(4) == "30" && countMin%2!=0)
+                                else if(resp.bookingList.get(i).get(p).get(1) == "30" && countMin%2!=0)
                                 {
                                     //printing 'x' for the number of slots booked
                                     for(int k=0; k < count; k++)
@@ -304,13 +304,20 @@ public class FacilityClient {
     private String askFacilityName() {
         int choice = 0;
         String str = "";
-        System.out.print("----------------------------------------------------------------\n" +
-        "Please choose a Facility\n" +
-        "1: North Hill Gym\n");
-        choice = Util.safeReadInt();
-        if(choice == 1){
-            str = "North Hill Gym";
-        } 
+        while(true){
+            System.out.print("----------------------------------------------------------------\n" +
+            "Please choose a Facility\n" +
+            "1: North Hill Gym\n");
+            choice = Util.safeReadInt();
+            if(choice == 1){
+                str = "North Hill Gym";
+                break;
+            } 
+            else{
+                System.out.println("Please only choose one of the following options!");
+                continue;
+            }
+        }
         return str;
     }
 
@@ -334,16 +341,16 @@ public class FacilityClient {
 
     private static float getDuration(ArrayList<ArrayList<ArrayList<String>>> bookingList, int i, int p) {
         //get start time of the booking
-        String startTime = bookingList.get(i).get(p).get(3) + bookingList.get(i).get(p).get(4);
+        String startTime = bookingList.get(i).get(p).get(0) + bookingList.get(i).get(p).get(1);
 
         //get end time of the booking
-        String endTime = bookingList.get(i).get(p).get(5) + bookingList.get(i).get(p).get(6);
+        String endTime = bookingList.get(i).get(p).get(2) + bookingList.get(i).get(p).get(3);
 
         //subtracting the time together will not get you the correct duration
         //need to minus off to get the correct duration
         //first, get the subtract multiplier (since as the time increase, the more inaccuracy)
         //subtract multiplier will be used to remove the addtional values
-        float subtractMultiplier = Float.parseFloat(bookingList.get(i).get(p).get(5)) - Float.parseFloat(bookingList.get(i).get(p).get(3));
+        float subtractMultiplier = Float.parseFloat(bookingList.get(i).get(p).get(2)) - Float.parseFloat(bookingList.get(i).get(p).get(0));
         
         //change duration to minutes format then 
         //return duration in hour format
