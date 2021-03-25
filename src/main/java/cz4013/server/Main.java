@@ -40,6 +40,7 @@ public class Main {
         LruCache cache = new LruCache<>(atLeastOnce ? 0: 1024);
         Router router = new Router(cache);
         router.bind("viewFacilityAvailability", facService::processViewFacilityAvailability, new ViewFacilityAvailabilityRequest(){})
+            .bind("viewFacilityAvailabilityArray", facService::processViewFacilityAvailabilityArray, new ViewFacilityAvailabilityArrayRequest(){})
             .bind("viewFacilityDetail", facService::processViewFacilityDetail, new ViewFacilityDetailRequest(){})
             .bind("viewPersonalBookings", facService::processViewPersonalBookings, new ViewPersonalBookingsRequest(){})
             .bind("addFacilityReview", facService::processAddFacilityReview, new AddFacilityReviewRequest(){})

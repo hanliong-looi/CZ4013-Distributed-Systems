@@ -107,6 +107,23 @@ public class FacilityService {
     }
 
     /**
+     * Processes a view facility availability in array request.
+     *
+     * @param req the request to be processed
+     * @return the response after processing the given request
+     */
+    public ViewFacilityAvailabilityArrayResponse processViewFacilityAvailabilityArray(ViewFacilityAvailabilityArrayRequest req) {
+        ArrayList<ArrayList<Integer>> ar = new ArrayList<ArrayList<Integer>>();
+        ar = db.getBookingArray(req.facName, req.days);
+        if(ar!=null){
+            return new ViewFacilityAvailabilityArrayResponse(ar, "");
+        }
+        else{
+            return ViewFacilityAvailabilityArrayResponse.failed("Error returning availability array");
+        }
+    }
+
+    /**
      * Processes a request to view all bookings made by the client.
      *
      * @param req the request to be processed
@@ -153,7 +170,11 @@ public class FacilityService {
             duration -= 0.5;
         }
 
-        BookingDetail bookingDetail =  new BookingDetail(req.facName, bookingId, req.day, req.startHour, req.startMin, duration/*req.endHour, req.endMin*/);
+        BookingDetail bookingDetail =  new BookingDetail(req.facName, bookingId, req.day, req.startHour, req.startMin, duration);
+        boolean check = checkBooking(req.facName, req.day, req.startHour, req.startMin, duration);
+        if(!check){
+            return AddFacilityBookingResponse.failed("Booking timing clashes with existing bookings.");
+        }
         boolean success = db.addBooking(req.facName, bookingDetail);
         if(!success){
             return AddFacilityBookingResponse.failed("Booking failed.");
@@ -204,28 +225,38 @@ public class FacilityService {
             }
             newBookingDetail.startHour -= (req.offset / 2);
         }
+        boolean check = checkBooking(newBookingDetail.facName, newBookingDetail.day, newBookingDetail.startHour, newBookingDetail.startMin, newBookingDetail.duration);
+        if(!check){
+            db.addBooking(oldBookingDetail.facName, oldBookingDetail);
+            return ModifyFacilityBookingResponse.failed("Booking modification failed, new booking clashes with existing bookings.");
+        }
         boolean addSuccess = db.addBooking(req.facName, newBookingDetail);
         if(addSuccess){
             return new ModifyFacilityBookingResponse(newBookingDetail.bookingId, addSuccess, "");
         }
         else{
+            db.addBooking(newBookingDetail.facName, newBookingDetail);
             return ModifyFacilityBookingResponse.failed("Booking modification failed.");
         }
     }
 
+    /**
+     * Converts start time and duration to end time
+     *
+     */
     private ArrayList<String> convertDurationToEndTime(int startHour, int startMin, Double duration){
         ArrayList<String> endTime = new ArrayList<String>();
         int endHour, endMin;
         String durationStr = String.valueOf(duration);
         int indexOfDecimal = durationStr.indexOf(".");
-        String minStr = durationStr.substring(indexOfDecimal);
-        if(minStr == "30"){
+        String minStr = durationStr.substring(indexOfDecimal+1);
+        if(minStr.equals("5")){
             if(startMin == 30){
                 endHour = startHour + (int)Math.floor(duration) + 1;
                 endMin = 0;
             }
             else{
-                endHour = startHour;
+                endHour = startHour + (int)Math.floor(duration);
                 endMin = 30;
             }
         }
@@ -236,6 +267,37 @@ public class FacilityService {
         endTime.add(Integer.toString(endHour));
         endTime.add(Integer.toString(endMin));
         return endTime;
+    }
+
+    /**
+     * Checks if the booking made is valid
+     *
+     */
+    private boolean checkBooking(String facName, int day, int startHour, int startMin, Double duration){
+        ArrayList<Integer> dayAr = new ArrayList<Integer>();
+        dayAr.add(day);
+        ArrayList<ArrayList<Integer>> bookArray = new ArrayList<ArrayList<Integer>>();
+        bookArray = db.getBookingArray(facName, dayAr);
+        int startIdx = convertStartTimeToIndex(startHour, startMin);
+        int count = (int)(duration * 2);
+        for(int i = 0; i < count; i ++){
+            System.out.println("checking i");
+            if(bookArray.get(0).get(startIdx+i) == 1){
+                System.out.println("timing clashed");
+                return false;
+            }
+        }
+        System.out.println("timing no clash");
+        return true;
+    }
+
+    public int convertStartTimeToIndex(int startHour, int startMin){
+        int index = 0;
+        index = (startHour - 9) * 2;
+        if(startMin == 30){
+            index += 1;
+        }
+        return index;
     }
 
     // private void broadcast(String info) {

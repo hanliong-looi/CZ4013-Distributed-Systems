@@ -40,6 +40,12 @@ public class FacilityClient {
             new Response<ViewFacilityAvailabilityResponse>() {}
         );
 
+        ViewFacilityAvailabilityArrayResponse arrayResp = client.request(
+            "viewFacilityAvailabilityArray",
+            new ViewFacilityAvailabilityArrayRequest(name, days),
+            new Response<ViewFacilityAvailabilityArrayResponse>() {}
+        );
+
         System.out.printf("Facility %s availability: \n", name);
         
         // for table design
@@ -189,6 +195,17 @@ public class FacilityClient {
         //need check for availability, return error msg if unavailable
         if(resp.success){
             System.out.printf("Your confirmation ID is: %d\n", resp.bookingId);
+            System.out.println(resp.errorMessage);
+            if(bookingsMade.containsKey(name)){
+                bookingsMade.get(name).get(bookingDay-1).add(resp.bookingId);
+            }
+            else{
+                bookingsMade.put(name, new ArrayList<ArrayList<Integer>>());
+                for(int i = 0; i < 7; i++){
+                    bookingsMade.get(name).add(new ArrayList<Integer>());
+                }
+                bookingsMade.get(name).get(bookingDay-1).add(resp.bookingId);
+            }
         }
         else{
             System.out.println(resp.errorMessage);
@@ -199,10 +216,13 @@ public class FacilityClient {
     * Sends a request to server to modify facility booking.
     */
     public void runModifyFacilityBooking(){
+        // If client has not made any booking, end function call
         if(bookingsMade.isEmpty()){
             System.out.println("You have not made any bookings yet.");
             return;
         }
+
+        // Query list of bookings made by client
         int length = 0;
         ArrayList<String> facNameList = new ArrayList<String>();
         ArrayList<Integer> dayList = new ArrayList<Integer>();
@@ -211,10 +231,15 @@ public class FacilityClient {
             String facName = entry.getKey();
             ArrayList<ArrayList<Integer>> bookingsMadeList = entry.getValue();
             for(int i = 0; i < bookingsMadeList.size(); i++){
-                facNameList.add(facName);
-                dayList.add(bookingsMadeList.get(i).get(0));
-                idList.add(bookingsMadeList.get(i).get(0));
-                length ++;
+                if(bookingsMadeList.get(i).size()==0){
+                    continue;
+                }
+                for(int j = 0; j < bookingsMadeList.get(i).size(); j++){
+                    facNameList.add(facName);
+                    dayList.add(i+1);
+                    idList.add(bookingsMadeList.get(i).get(j));
+                    length ++;
+                }
             }
         }
         ViewPersonalBookingsResponse vresp = client.request(
@@ -222,24 +247,92 @@ public class FacilityClient {
             new ViewPersonalBookingsRequest(length, facNameList, dayList, idList),
             new Response<ViewPersonalBookingsResponse>() {}
         );
+
+        // Print list of bookings queried by client
         String str = String.format("[1-%d]", vresp.bookingsMade.size());
-        System.out.printf("Please select the booking to be modified " + str + ": ");
+        System.out.printf("Please select the booking to be modified " + str + ": \n");
         for(int i = 0; i < vresp.bookingsMade.size(); i++){
             String facName = vresp.bookingsMade.get(i).get(0);
             String dayStr = convertIntToDay(Integer.valueOf(vresp.bookingsMade.get(i).get(2)));
-            String startTime = vresp.bookingsMade.get(i).get(3) + vresp.bookingsMade.get(i).get(4);
-            String endTime = vresp.bookingsMade.get(i).get(5) + vresp.bookingsMade.get(i).get(6);
+            String startHour = vresp.bookingsMade.get(i).get(3);
+            if(startHour.length()==1){
+                startHour = "0" + startHour;
+            }
+            String startMin = vresp.bookingsMade.get(i).get(4);
+            if(startMin.length()==1){
+                startMin = "0" + startMin;
+            }
+            String startTime = startHour + startMin;
+            String endHour = vresp.bookingsMade.get(i).get(5);
+            if(endHour.length()==1){
+                endHour = "0" + endHour;
+            }
+            String endMin = vresp.bookingsMade.get(i).get(6);
+            if(endMin.length()==1){
+                endMin = "0" + endMin;
+            }
+            String endTime = endHour + endMin;
             System.out.println("[" + Integer.toString(i+1) + "]: " + facName + " " + dayStr + " " + startTime + "-" + endTime);
         }
+        System.out.println("[0]: Return to menu");
+
+        // Ask client to select the booking to be modified
+        String chosenFacName;
+        int chosenDay, chosenBookingId;
         while(true){
             int choice = Util.safeReadInt();
-            if(choice < 1 || choice > vresp.bookingsMade.size()){
+            if(choice == 0){
+                return;
+            }
+            else if(choice < 1 || choice > vresp.bookingsMade.size()){
+                System.out.println("Invalid choice!");
+            }
+            else{
+                chosenFacName = vresp.bookingsMade.get(choice-1).get(0);
+                chosenDay = Integer.valueOf(vresp.bookingsMade.get(choice-1).get(2));
+                chosenBookingId = Integer.valueOf(vresp.bookingsMade.get(choice-1).get(1));
+                break;
+            }
+        }
+
+        // Ask client for the details of modification
+        System.out.println("Do you want to bring forward or postpone your booking?");
+        System.out.println("1: Bring forward");
+        System.out.println("2: Postpone");
+        while(true){
+            int offchoice = Util.safeReadInt();
+            if(offchoice < 1 || offchoice > 2){
                 System.out.println("Invalid choice!");
             }
             else{
                 break;
             }
-            
+        }
+        System.out.println("Please indicate the duration: (e.g 1 = 30 minutes, 2 = 1 hour)");
+        int offset;
+        while(true){
+            offset = Util.safeReadInt();
+            if(offset < 1 || offset > 16){
+                System.out.println("Invalid duration!");
+            }
+            else{
+                break;
+            }
+        }
+
+        // Send modify facility request to server
+        ModifyFacilityBookingResponse mresp = client.request(
+            "modifyFacilityBooking",
+            new ModifyFacilityBookingRequest(chosenFacName, chosenDay, chosenBookingId, offset),
+            new Response<ModifyFacilityBookingResponse>() {}
+        );
+        if(mresp.success){
+            bookingsMade.get(chosenFacName).get(chosenDay-1).remove((Object)chosenBookingId);
+            bookingsMade.get(chosenFacName).get(chosenDay-1).add(mresp.bookingId);
+            System.out.println("Booking successfully modified.");
+        }
+        else{
+            System.out.println(mresp.errorMessage);
         }
     }
 
