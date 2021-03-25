@@ -40,6 +40,12 @@ public class FacilityClient {
             new Response<ViewFacilityAvailabilityResponse>() {}
         );
 
+        ViewFacilityAvailabilityArrayResponse arrayResp = client.request(
+            "viewFacilityAvailabilityArray",
+            new ViewFacilityAvailabilityArrayRequest(name, days),
+            new Response<ViewFacilityAvailabilityArrayResponse>() {}
+        );
+
         System.out.printf("Facility %s availability: \n", name);
         
         // for table design
@@ -186,6 +192,17 @@ public class FacilityClient {
         //need check for availability, return error msg if unavailable
         if(resp.success){
             System.out.printf("Your confirmation ID is: %d\n", resp.bookingId);
+            System.out.println(resp.errorMessage);
+            if(bookingsMade.containsKey(name)){
+                bookingsMade.get(name).get(bookingDay-1).add(resp.bookingId);
+            }
+            else{
+                bookingsMade.put(name, new ArrayList<ArrayList<Integer>>());
+                for(int i = 0; i < 7; i++){
+                    bookingsMade.get(name).add(new ArrayList<Integer>());
+                }
+                bookingsMade.get(name).get(bookingDay-1).add(resp.bookingId);
+            }
         }
         else{
             System.out.println(resp.errorMessage);
@@ -208,10 +225,15 @@ public class FacilityClient {
             String facName = entry.getKey();
             ArrayList<ArrayList<Integer>> bookingsMadeList = entry.getValue();
             for(int i = 0; i < bookingsMadeList.size(); i++){
-                facNameList.add(facName);
-                dayList.add(bookingsMadeList.get(i).get(0));
-                idList.add(bookingsMadeList.get(i).get(0));
-                length ++;
+                if(bookingsMadeList.get(i).size()==0){
+                    continue;
+                }
+                for(int j = 0; j < bookingsMadeList.get(i).size(); j++){
+                    facNameList.add(facName);
+                    dayList.add(i+1);
+                    idList.add(bookingsMadeList.get(i).get(j));
+                    length ++;
+                }
             }
         }
         ViewPersonalBookingsResponse vresp = client.request(
@@ -220,12 +242,28 @@ public class FacilityClient {
             new Response<ViewPersonalBookingsResponse>() {}
         );
         String str = String.format("[1-%d]", vresp.bookingsMade.size());
-        System.out.printf("Please select the booking to be modified " + str + ": ");
+        System.out.printf("Please select the booking to be modified " + str + ": \n");
         for(int i = 0; i < vresp.bookingsMade.size(); i++){
             String facName = vresp.bookingsMade.get(i).get(0);
             String dayStr = convertIntToDay(Integer.valueOf(vresp.bookingsMade.get(i).get(2)));
-            String startTime = vresp.bookingsMade.get(i).get(3) + vresp.bookingsMade.get(i).get(4);
-            String endTime = vresp.bookingsMade.get(i).get(5) + vresp.bookingsMade.get(i).get(6);
+            String startHour = vresp.bookingsMade.get(i).get(3);
+            if(startHour.length()==1){
+                startHour = "0" + startHour;
+            }
+            String startMin = vresp.bookingsMade.get(i).get(4);
+            if(startMin.length()==1){
+                startMin = "0" + startMin;
+            }
+            String startTime = startHour + startMin;
+            String endHour = vresp.bookingsMade.get(i).get(5);
+            if(endHour.length()==1){
+                endHour = "0" + endHour;
+            }
+            String endMin = vresp.bookingsMade.get(i).get(6);
+            if(endMin.length()==1){
+                endMin = "0" + endMin;
+            }
+            String endTime = endHour + endMin;
             System.out.println("[" + Integer.toString(i+1) + "]: " + facName + " " + dayStr + " " + startTime + "-" + endTime);
         }
         while(true){
@@ -236,7 +274,6 @@ public class FacilityClient {
             else{
                 break;
             }
-            
         }
     }
 

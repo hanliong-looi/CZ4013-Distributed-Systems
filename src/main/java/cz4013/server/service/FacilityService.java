@@ -107,6 +107,23 @@ public class FacilityService {
     }
 
     /**
+     * Processes a view facility availability in array request.
+     *
+     * @param req the request to be processed
+     * @return the response after processing the given request
+     */
+    public ViewFacilityAvailabilityArrayResponse processViewFacilityAvailabilityArray(ViewFacilityAvailabilityArrayRequest req) {
+        ArrayList<ArrayList<Integer>> ar = new ArrayList<ArrayList<Integer>>();
+        ar = db.getBookingArray(req.facName, req.days);
+        if(ar!=null){
+            return new ViewFacilityAvailabilityArrayResponse(ar, "");
+        }
+        else{
+            return ViewFacilityAvailabilityArrayResponse.failed("Error returning availability array");
+        }
+    }
+
+    /**
      * Processes a request to view all bookings made by the client.
      *
      * @param req the request to be processed
@@ -218,14 +235,14 @@ public class FacilityService {
         int endHour, endMin;
         String durationStr = String.valueOf(duration);
         int indexOfDecimal = durationStr.indexOf(".");
-        String minStr = durationStr.substring(indexOfDecimal);
-        if(minStr == "30"){
+        String minStr = durationStr.substring(indexOfDecimal+1);
+        if(minStr.equals("5")){
             if(startMin == 30){
                 endHour = startHour + (int)Math.floor(duration) + 1;
                 endMin = 0;
             }
             else{
-                endHour = startHour;
+                endHour = startHour + (int)Math.floor(duration);
                 endMin = 30;
             }
         }
@@ -237,6 +254,8 @@ public class FacilityService {
         endTime.add(Integer.toString(endMin));
         return endTime;
     }
+
+    // private boolean checkBooking
 
     // private void broadcast(String info) {
     //     purgeListeners();

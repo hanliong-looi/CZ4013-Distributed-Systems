@@ -15,21 +15,25 @@ import java.util.HashMap;
 public class Database {
     private HashMap<String, FacilityDetail> facDB = new HashMap<String, FacilityDetail>();
     private HashMap<String, ArrayList<ArrayList<BookingDetail>>> bookDB = new HashMap<String, ArrayList<ArrayList<BookingDetail>>>();
+    private HashMap<String, ArrayList<ArrayList<Integer>>> availDB = new HashMap<String, ArrayList<ArrayList<Integer>>>();
 
     //initialize the facilities in facDB and bookDB
     public Database(){
         // Creating facilities
         System.out.println("Initializing facilities in DB...");
-        FacilityDetail fd = new FacilityDetail("North Hill Gym", "0830 - 2230", "60 Nanyang Crescent, Lvl 3, Block 19A Binjai Hall", new ArrayList<String>());
-        facDB.put("North Hill Gym", fd);
-        addReview("North Hill Gym", "Very lovely gym <3");
+        initializeFacDB();
 
         //Creating bookings
-        System.out.println("Initializing bookings in DB...");
+        System.out.println("Initializing bookings in array...");
+        initializeAvailDB("North Hill Gym");
+
+        System.out.println("Initializing bookDB...");
         ArrayList<ArrayList<BookingDetail>> ar = new ArrayList<ArrayList<BookingDetail>>();
         for(int i = 0; i < 7; i++){
             ar.add(new ArrayList<BookingDetail>());
         }
+
+        System.out.println("Populating some bookings in DB...");
         bookDB.put("North Hill Gym", ar);
         BookingDetail bd = new BookingDetail("North Hill Gym", 123456, 1, 9, 30, /*10, 30,*/ 1.0);
         if(!addBooking("North Hill Gym", bd)){
@@ -49,12 +53,17 @@ public class Database {
      */
     public boolean addBooking(String facName, BookingDetail bookingDetail) {
         int day = bookingDetail.day;
+        int count = (int)(bookingDetail.duration * 2);
+        int startIdx = convertStartTimeToIndex(bookingDetail.startHour, bookingDetail.startMin);
         if(bookDB.containsKey(facName)){
             if(bookDB.get(facName).get(day-1).contains(bookingDetail)){
                 return false;
             }
             else{
                 bookDB.get(facName).get(day-1).add(bookingDetail);
+                for(int i = 0; i < count; i++){
+                    availDB.get(facName).get(day-1).set(startIdx + i, 1);
+                }
                 return true;
             }
         }
@@ -65,6 +74,10 @@ public class Database {
             }
             ar.get(bookingDetail.day-1).add(bookingDetail);
             bookDB.put(facName, ar);
+            initializeAvailDB(facName);
+            for(int i = 0; i < count; i++){
+                availDB.get(facName).get(day-1).set(startIdx + i, 1);
+            }
             return true;
         }
     }
@@ -80,6 +93,25 @@ public class Database {
             ArrayList<ArrayList<BookingDetail>> ar = new ArrayList<ArrayList<BookingDetail>>();
             for(int i = 0; i < days.size(); i++){
                 ar.add(bookDB.get(facName).get(days.get(i)-1));
+            }
+            return ar;
+        }
+        else{
+            return null;
+        }
+    }
+
+    /**
+     * Queries all bookings for a facility for the particular days in array
+     * Returns the list of bookings for that facility
+     *
+     * @param facName name of facility
+     */
+    public ArrayList<ArrayList<Integer>> getBookingArray(String facName, ArrayList<Integer> days){
+        if(availDB.containsKey(facName)){
+            ArrayList<ArrayList<Integer>> ar = new ArrayList<ArrayList<Integer>>();
+            for(int i = 0; i < days.size(); i++){
+                ar.add(availDB.get(facName).get(days.get(i)-1));
             }
             return ar;
         }
@@ -120,6 +152,11 @@ public class Database {
             if(bookDB.get(facName).get(bookingDetail.day-1).contains(bookingDetail)){
                 int index = bookDB.get(facName).get(bookingDetail.day-1).indexOf(bookingDetail);
                 bookDB.get(facName).remove(index);
+                int count = (int)(bookingDetail.duration * 2);
+                int startIdx = convertStartTimeToIndex(bookingDetail.startHour, bookingDetail.startMin);
+                for(int i = 0; i < count; i++){
+                    availDB.get(facName).get(bookingDetail.day-1).set(startIdx + i, 0);
+                }
                 return true;
             }
             else{
@@ -161,5 +198,36 @@ public class Database {
         else{
             return false;
         }
+    }
+
+    public int convertStartTimeToIndex(int startHour, int startMin){
+        int index = 0;
+        index = startHour - 9;
+        if(startMin == 30){
+            index += 1;
+        }
+        return index;
+    }
+
+    public void initializeFacDB(){
+        FacilityDetail fd = new FacilityDetail("North Hill Gym", "0830 - 2230", "60 Nanyang Crescent, Lvl 3, Block 19A Binjai Hall", new ArrayList<String>());
+        facDB.put("North Hill Gym", fd);
+        addReview("North Hill Gym", "Very lovely gym <3");
+    }
+
+    public void initializeBookDB(){
+        
+    }
+
+    public void initializeAvailDB(String facName){
+        ArrayList<Integer> intAr = new ArrayList<Integer>();
+        ArrayList<ArrayList<Integer>> dayAr = new ArrayList<ArrayList<Integer>>();
+        for(int j = 0; j < 18; j++){
+            intAr.add(0);
+        }
+        for(int i = 0; i < 7; i ++){
+            dayAr.add(intAr);
+        }
+        availDB.put(facName, dayAr);
     }
 }
