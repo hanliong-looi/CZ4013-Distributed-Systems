@@ -44,16 +44,16 @@ public class FacilityClient {
         
         // for table design
         System.out.format("\n");
-        System.out.format("+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+");
+        System.out.format("+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
         System.out.format("\n");
         
         // to print time
-        System.out.format("| Column name | ");
-        System.out.format("  09:00 AM  |  09:30 AM   |  10:00 AM   |  10:30 AM   |  11:00 AM   |  11:30 AM   |  12:00 PM   |  12:30 PM   |  13:00 PM   |  13:30 PM   |  14:00 PM   |  14:30 PM   |  15:00 PM   |  15:30 PM   |  16:00 PM   |  16:30 PM   |  17:00 PM   |");
+        System.out.format("|      | ");
+        System.out.format("09:00 | 09:30 | 10:00 | 10:30 | 11:00 | 11:30 | 12:00 | 12:30 | 13:00 | 13:30 | 14:00 | 14:30 | 15:00 | 15:30 | 16:00 | 16:30 | 17:00 |");
         System.out.print("\n");
 
         // for table design
-        System.out.format("+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+");
+        System.out.format("+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
         System.out.format("\n");
         
         float duration;
@@ -65,7 +65,7 @@ public class FacilityClient {
         for (int i = 0; i < days.size(); i++) {
             
             //print days in first column
-            System.out.print("|     " + convertIntToDay(days.get(i)) + "     |");
+            System.out.print("| " + convertIntToDay(days.get(i)) + "  |");
                 
                 //if the day contains booking(s)
                 if(!resp.bookingList.get(i).isEmpty())
@@ -87,7 +87,7 @@ public class FacilityClient {
                                 {
                                     //printing 'x' for the number of slots booked
                                     for(int k=0; k < count; k++)
-                                        System.out.print("     hi      |");
+                                        System.out.print("  hi   |");
                                     j+=count;
                                 }   
                                 //check if start min is 30 and that the current timeslot min is 30
@@ -95,12 +95,12 @@ public class FacilityClient {
                                 {
                                     //printing 'x' for the number of slots booked
                                     for(int k=0; k < count; k++)
-                                        System.out.print("     hi      |");
+                                        System.out.print("  hi   |");
                                     j+=count;
                                 }  
                                 else
                                     //if not match, just leave it empty
-                                    System.out.print("             |");
+                                    System.out.print("       |");
                             }
                             // else if((Math.floor(countHour) == Float.parseFloat(bookingList.get(i).get(0).get(0))) && countMinThirty.equals(bookingList.get(i).get(0).get(1)))
                             // {
@@ -108,7 +108,7 @@ public class FacilityClient {
                             // }
                             else
                             {
-                                System.out.print("             |");
+                                System.out.print("       |");
                             }
                             countMin++;
                             countHour+=0.5;
@@ -116,7 +116,7 @@ public class FacilityClient {
                     }    
                     // for table design
                     System.out.print("\n");
-                    System.out.format("+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+");
+                    System.out.format("+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
                     System.out.format("\n");
                     
                 }
@@ -124,7 +124,7 @@ public class FacilityClient {
                 {
                     // for table design
                     System.out.print("\n");
-                    System.out.format("+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+");
+                    System.out.format("+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
                     System.out.format("\n");
                 }
         }
