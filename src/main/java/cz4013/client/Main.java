@@ -66,6 +66,9 @@ public class Main {
                 case 3:
                     facilityClient.runModifyFacilityBooking();
                     break;
+                case 4:
+                    facilityClient.runMonitorFacilityAvailability();
+                    break;
                 case 5:
                     facilityClient.runViewFacilityDetail();
                     break;

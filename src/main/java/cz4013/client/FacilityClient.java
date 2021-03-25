@@ -24,153 +24,107 @@ public class FacilityClient {
     }
 
     /**
-    * Sends a request to server to view facility availability.
-    */
+     * Sends a request to server to view facility availability.
+     */
     public void runViewFacilityAvailability() {
         System.out.println("Please input the following information");
-        //get facility name
+        // get facility name
         String name = askFacilityName();
 
-        //get days selected
+        // get days selected
         ArrayList<Integer> days = askDays();
 
-        ViewFacilityAvailabilityResponse resp = client.request(
-            "viewFacilityAvailability",
-            new ViewFacilityAvailabilityRequest(name, days),
-            new Response<ViewFacilityAvailabilityResponse>() {}
-        );
+        ViewFacilityAvailabilityResponse resp = client.request("viewFacilityAvailability",
+                new ViewFacilityAvailabilityRequest(name, days), new Response<ViewFacilityAvailabilityResponse>() {
+                });
 
-        ViewFacilityAvailabilityArrayResponse arrayResp = client.request(
-            "viewFacilityAvailabilityArray",
-            new ViewFacilityAvailabilityArrayRequest(name, days),
-            new Response<ViewFacilityAvailabilityArrayResponse>() {}
-        );
+        ViewFacilityAvailabilityArrayResponse arrayResp = client.request("viewFacilityAvailabilityArray",
+                new ViewFacilityAvailabilityArrayRequest(name, days),
+                new Response<ViewFacilityAvailabilityArrayResponse>() {
+                });
 
+        System.out.format("\n");
         System.out.printf("Facility %s availability: \n", name);
-        
+
         // for table design
         System.out.format("\n");
-        System.out.format("+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
+        System.out.format(
+                "+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
         System.out.format("\n");
-        
+
         // to print time
         System.out.format("|      | ");
-        System.out.format("09:00 | 09:30 | 10:00 | 10:30 | 11:00 | 11:30 | 12:00 | 12:30 | 13:00 | 13:30 | 14:00 | 14:30 | 15:00 | 15:30 | 16:00 | 16:30 | 17:00 |");
+        System.out.format(
+                "09:00 | 09:30 | 10:00 | 10:30 | 11:00 | 11:30 | 12:00 | 12:30 | 13:00 | 13:30 | 14:00 | 14:30 | 15:00 | 15:30 | 16:00 | 16:30 | 17:00 |");
         System.out.print("\n");
 
         // for table design
-        System.out.format("+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
+        System.out.format(
+                "+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
         System.out.format("\n");
-        
+
         float duration;
         int count;
         float countHour = 9;
         float countMin = 0;
 
-        //loop through the days selected
+        if (days.size() == 0) {
+            System.out.println("No date selected!");
+        }
+
+        // loop through the days selected
         for (int i = 0; i < days.size(); i++) {
-            
-            //print days in first column
-            System.out.print("| " + convertIntToDay(days.get(i)) + "  |");
-                
-                //if the day contains booking(s)
-                if(!resp.bookingList.get(i).isEmpty())
-                {   
-                    //loop through the bookings on that day
-                    for(int p = 0; p < resp.bookingList.get(i).size(); p++){
-                        //loop through the timeslots
-                        for(int j = 0; j <=17; j++){
-                            //getting duration of the booking
-                            duration = getDuration(resp.bookingList, i, p);
-                            //get number of slots booked, based on duration. 1 slot = 0.5 hour
-                            count = (int)(duration/0.5);
-                            //print 'x' if slot is booked
-                            //while looping through timeslots, if timeslot matches the booking start hour
-                            if((Math.floor(countHour) == Float.parseFloat(resp.bookingList.get(i).get(p).get(0))))
-                            {
-                                //check if start min is 00 and that the current timeslot min is 00
-                                if(resp.bookingList.get(i).get(p).get(1).equals("0") && j%2==0)
-                                {
-                                    //printing 'x' for the number of slots booked
-                                    for(int k=0; k < count; k++)
-                                        System.out.print("  hi   |");
-                                    j+=count;
-                                }   
-                                //check if start min is 30 and that the current timeslot min is 30
-                                else if(resp.bookingList.get(i).get(p).get(1).equals("30")  && j%2!=0)
-                                {
-                                    //printing 'x' for the number of slots booked
-                                    for(int k=0; k < count; k++)
-                                        System.out.print("  hi   |");
-                                    j+=count;
-                                }  
-                                else
-                                    //if not match, just leave it empty
-                                    System.out.print("       |");
-                            }
-                            // else if((Math.floor(countHour) == Float.parseFloat(bookingList.get(i).get(0).get(0))) && countMinThirty.equals(bookingList.get(i).get(0).get(1)))
-                            // {
-                            //     System.out.print("     hi      |");
-                            // }
-                            else
-                            {
-                                System.out.print("       |");
-                            }
-                            countMin++;
-                            countHour+=0.5;
-                        }
-                    }    
-                    // for table design
-                    System.out.print("\n");
-                    System.out.format("+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
-                    System.out.format("\n");
-                    
-                }
-                else
-                {
-                    // for table design
-                    for(int j = 0; j <=16; j++){
+
+            // if the day contains booking(s)
+            if (!arrayResp.availArray.get(i).isEmpty()) {
+                // print days in first column
+                System.out.print("| " + convertIntToDay(days.get(i)) + "  |");
+                // loop through the timeslots
+                for (int j = 0; j < 17; j++) {
+                    // if there is a booking in that slot
+                    if (arrayResp.availArray.get(i).get(j) == 1) {
+                        System.out.print("  hi   |");
+                    }
+                    // if no booking in that slow
+                    else {
                         System.out.print("       |");
                     }
-                    System.out.print("\n");
-                    System.out.format("+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
-                    System.out.format("\n");
                 }
+                // for table design
+                System.out.print("\n");
+                System.out.format(
+                        "+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
+                System.out.format("\n");
+            }
+            // if no booking for that day
+            else {
+                // for table design
+                for (int j = 0; j <= 16; j++) {
+                    System.out.print("       |");
+                }
+                System.out.print("\n");
+                System.out.format(
+                        "+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
+                System.out.format("\n");
+            }
         }
         System.out.print("\n");
-        
-        // System.out.println("Size of booking list response: " + Integer.toString(resp.bookingList.size()));
-        // System.out.println("Size of booking list 2nd array response: " + Integer.toString(resp.bookingList.get(0).size()));
-        // for(int i=0; i<resp.bookingList.size(); i++){
-        //     //First get(0) returns the list of bookings for that day
-        //     //Second get(0) returns the particular booking of that day
-        //     //Third get(0) returns the attribute of that booking 0 = startHour, 1 = startMin, 2 = endHour, 3 = endMin
-            
-        //     System.out.printf("%s: %s \n", convertIntToDay(days.get(i)), resp.bookingList.get(0).get(0).get(0));
-            
-            
-        //     //for testing
-        //     System.out.printf("First get: %s \n", resp.bookingList.get(0));
-        //     System.out.printf("Second get: %s \n", resp.bookingList.get(0).get(0));
-        //     System.out.printf("Third get: %s \n", resp.bookingList.get(0).get(0).get(0));
-        // }
     }
 
     /**
-    * Sends a request to server to add facility booking.
-    */
+     * Sends a request to server to add facility booking.
+     */
     public void runAddFacilityBooking() {
         System.out.println("Please input the following information");
         String name = askFacilityName();
-        //choose a day
+        // choose a day
         int bookingDay = askBookingDay();
-        //choose timing, start time, end time
+        // choose timing, start time, end time
         String startTime = askStartTime();
         String endTime = askEndTime();
-        //need check that end time is not earlier than start time
-        while(true){
-            if(Integer.parseInt(endTime) < Integer.parseInt(startTime))
-            {
+        // need check that end time is not earlier than start time
+        while (true) {
+            if (Integer.parseInt(endTime) < Integer.parseInt(startTime)) {
                 System.out.println("End time must be later than start time!");
                 startTime = askStartTime();
                 endTime = askEndTime();
@@ -178,46 +132,42 @@ public class FacilityClient {
             break;
         }
 
-        //convert start time and end time into integers
-        int startHour = Integer.parseInt(startTime.substring(0,2));
-        int startMin = Integer.parseInt(startTime.substring(2,4));
-        int endHour = Integer.parseInt(endTime.substring(0,2));
-        int endMin = Integer.parseInt(endTime.substring(2,4));
-        
-        
-        AddFacilityBookingResponse resp = client.request(
-            "addFacilityBooking",
-            new AddFacilityBookingRequest(name, bookingDay, startHour, startMin, endHour, endMin),
-            new Response<AddFacilityBookingResponse>() {}
-        );
+        // convert start time and end time into integers
+        int startHour = Integer.parseInt(startTime.substring(0, 2));
+        int startMin = Integer.parseInt(startTime.substring(2, 4));
+        int endHour = Integer.parseInt(endTime.substring(0, 2));
+        int endMin = Integer.parseInt(endTime.substring(2, 4));
 
-        //get back unique confirmation ID
-        //need check for availability, return error msg if unavailable
-        if(resp.success){
+        AddFacilityBookingResponse resp = client.request("addFacilityBooking",
+                new AddFacilityBookingRequest(name, bookingDay, startHour, startMin, endHour, endMin),
+                new Response<AddFacilityBookingResponse>() {
+                });
+
+        // get back unique confirmation ID
+        // need check for availability, return error msg if unavailable
+        if (resp.success) {
             System.out.printf("Your confirmation ID is: %d\n", resp.bookingId);
             System.out.println(resp.errorMessage);
-            if(bookingsMade.containsKey(name)){
-                bookingsMade.get(name).get(bookingDay-1).add(resp.bookingId);
-            }
-            else{
+            if (bookingsMade.containsKey(name)) {
+                bookingsMade.get(name).get(bookingDay - 1).add(resp.bookingId);
+            } else {
                 bookingsMade.put(name, new ArrayList<ArrayList<Integer>>());
-                for(int i = 0; i < 7; i++){
+                for (int i = 0; i < 7; i++) {
                     bookingsMade.get(name).add(new ArrayList<Integer>());
                 }
-                bookingsMade.get(name).get(bookingDay-1).add(resp.bookingId);
+                bookingsMade.get(name).get(bookingDay - 1).add(resp.bookingId);
             }
-        }
-        else{
+        } else {
             System.out.println(resp.errorMessage);
         }
     }
 
     /**
-    * Sends a request to server to modify facility booking.
-    */
-    public void runModifyFacilityBooking(){
+     * Sends a request to server to modify facility booking.
+     */
+    public void runModifyFacilityBooking() {
         // If client has not made any booking, end function call
-        if(bookingsMade.isEmpty()){
+        if (bookingsMade.isEmpty()) {
             System.out.println("You have not made any bookings yet.");
             return;
         }
@@ -230,67 +180,65 @@ public class FacilityClient {
         for (Entry<String, ArrayList<ArrayList<Integer>>> entry : bookingsMade.entrySet()) {
             String facName = entry.getKey();
             ArrayList<ArrayList<Integer>> bookingsMadeList = entry.getValue();
-            for(int i = 0; i < bookingsMadeList.size(); i++){
-                if(bookingsMadeList.get(i).size()==0){
+            for (int i = 0; i < bookingsMadeList.size(); i++) {
+                if (bookingsMadeList.get(i).size() == 0) {
                     continue;
                 }
-                for(int j = 0; j < bookingsMadeList.get(i).size(); j++){
+                for (int j = 0; j < bookingsMadeList.get(i).size(); j++) {
                     facNameList.add(facName);
-                    dayList.add(i+1);
+                    dayList.add(i + 1);
                     idList.add(bookingsMadeList.get(i).get(j));
-                    length ++;
+                    length++;
                 }
             }
         }
-        ViewPersonalBookingsResponse vresp = client.request(
-            "viewPersonalBookings",
-            new ViewPersonalBookingsRequest(length, facNameList, dayList, idList),
-            new Response<ViewPersonalBookingsResponse>() {}
-        );
+        ViewPersonalBookingsResponse vresp = client.request("viewPersonalBookings",
+                new ViewPersonalBookingsRequest(length, facNameList, dayList, idList),
+                new Response<ViewPersonalBookingsResponse>() {
+                });
 
         // Print list of bookings queried by client
         String str = String.format("[1-%d]", vresp.bookingsMade.size());
         System.out.printf("Please select the booking to be modified " + str + ": \n");
-        for(int i = 0; i < vresp.bookingsMade.size(); i++){
+        for (int i = 0; i < vresp.bookingsMade.size(); i++) {
             String facName = vresp.bookingsMade.get(i).get(0);
             String dayStr = convertIntToDay(Integer.valueOf(vresp.bookingsMade.get(i).get(2)));
             String startHour = vresp.bookingsMade.get(i).get(3);
-            if(startHour.length()==1){
+            if (startHour.length() == 1) {
                 startHour = "0" + startHour;
             }
             String startMin = vresp.bookingsMade.get(i).get(4);
-            if(startMin.length()==1){
+            if (startMin.length() == 1) {
                 startMin = "0" + startMin;
             }
             String startTime = startHour + startMin;
             String endHour = vresp.bookingsMade.get(i).get(5);
-            if(endHour.length()==1){
+            if (endHour.length() == 1) {
                 endHour = "0" + endHour;
             }
             String endMin = vresp.bookingsMade.get(i).get(6);
-            if(endMin.length()==1){
+            if (endMin.length() == 1) {
                 endMin = "0" + endMin;
             }
             String endTime = endHour + endMin;
-            System.out.println("[" + Integer.toString(i+1) + "]: " + facName + " " + dayStr + " " + startTime + "-" + endTime);
+            System.out.println(
+                    "[" + Integer.toString(i + 1) + "]: " + facName + " " + dayStr + " " + startTime + "-" + endTime);
         }
         System.out.println("[0]: Return to menu");
 
         // Ask client to select the booking to be modified
         String chosenFacName;
-        int chosenDay, chosenBookingId;
-        while(true){
-            int choice = Util.safeReadInt();
-            if(choice == 0){
+        int chosenDay, chosenBookingId, choice;
+        while (true) {
+            choice = Util.safeReadInt();
+            if (choice == 0) {
                 return;
-            }
-            else if(choice < 1 || choice > vresp.bookingsMade.size()){
+            } else if (choice < 1 || choice > vresp.bookingsMade.size()) {
                 System.out.println("Invalid choice!");
-            }
-            else{
-                chosenFacName = vresp.bookingsMade.get(choice-1).get(0);
-                chosenDay = Integer.valueOf(vresp.bookingsMade.get(choice-1).get(2));
-                chosenBookingId = Integer.valueOf(vresp.bookingsMade.get(choice-1).get(1));
+            } else {
+                chosenFacName = vresp.bookingsMade.get(choice - 1).get(0);
+                chosenDay = Integer.valueOf(vresp.bookingsMade.get(choice - 1).get(2));
+                chosenBookingId = Integer.valueOf(vresp.bookingsMade.get(choice - 1).get(1));
                 break;
             }
         }
@@ -299,117 +247,162 @@ public class FacilityClient {
         System.out.println("Do you want to bring forward or postpone your booking?");
         System.out.println("1: Bring forward");
         System.out.println("2: Postpone");
-        while(true){
-            int offchoice = Util.safeReadInt();
-            if(offchoice < 1 || offchoice > 2){
+        int offchoice;
+        while (true) {
+            offchoice = Util.safeReadInt();
+            if (offchoice < 1 || offchoice > 2) {
                 System.out.println("Invalid choice!");
-            }
-            else{
+            } else {
                 break;
             }
         }
-        System.out.println("Please indicate the duration: (e.g 1 = 30 minutes, 2 = 1 hour)");
+
+        String startHour = vresp.bookingsMade.get(choice - 1).get(3);
+        if (startHour.length() == 1) {
+            startHour = "0" + startHour;
+        }
+        String startMin = vresp.bookingsMade.get(choice - 1).get(4);
+        if (startMin.length() == 1) {
+            startMin = "0" + startMin;
+        }
+        String startTime = startHour + startMin;
+        String endHour = vresp.bookingsMade.get(choice - 1).get(5);
+        if (endHour.length() == 1) {
+            endHour = "0" + endHour;
+        }
+        String endMin = vresp.bookingsMade.get(choice - 1).get(6);
+        if (endMin.length() == 1) {
+            endMin = "0" + endMin;
+        }
+        String endTime = endHour + endMin;
+
         int offset;
-        while(true){
+        while (true) {
+            System.out.println("Please indicate the duration: (e.g 1 = 30 minutes, 2 = 1 hour)");
             offset = Util.safeReadInt();
-            if(offset < 1 || offset > 16){
-                System.out.println("Invalid duration!");
-            }
-            else{
+            // if(offset < 1 || offset > 16){
+            // System.out.println("Invalid duration! ");
+            // }
+            // check that client does not postpone booking past 5pm or bring forward before
+            // 9am
+            if (offchoice == 1 && checkDuration(startTime, endTime, offset, offchoice)) {
+                System.out.println("Start time cannot be earlier than 0900 AM!");
+            } else if (offchoice == 2 && checkDuration(startTime, endTime, offset, offchoice)) {
+                System.out.println("End time cannot be later than 1700 PM!");
+            } else {
                 break;
             }
         }
 
         // Send modify facility request to server
-        ModifyFacilityBookingResponse mresp = client.request(
-            "modifyFacilityBooking",
-            new ModifyFacilityBookingRequest(chosenFacName, chosenDay, chosenBookingId, offset),
-            new Response<ModifyFacilityBookingResponse>() {}
-        );
-        if(mresp.success){
-            bookingsMade.get(chosenFacName).get(chosenDay-1).remove((Object)chosenBookingId);
-            bookingsMade.get(chosenFacName).get(chosenDay-1).add(mresp.bookingId);
+        ModifyFacilityBookingResponse mresp = client.request("modifyFacilityBooking",
+                new ModifyFacilityBookingRequest(chosenFacName, chosenDay, chosenBookingId, offset),
+                new Response<ModifyFacilityBookingResponse>() {
+                });
+        if (mresp.success) {
+            bookingsMade.get(chosenFacName).get(chosenDay - 1).remove((Object) chosenBookingId);
+            bookingsMade.get(chosenFacName).get(chosenDay - 1).add(mresp.bookingId);
             System.out.println("Booking successfully modified.");
-        }
-        else{
+        } else {
             System.out.println(mresp.errorMessage);
         }
     }
 
     /**
-    * Sends a request to server to view facility details.
-    */
-    public void runViewFacilityDetail(){
-        System.out.println("Please input the following information");
+     * Monitors the availability of a facility.
+     */
+    public void runMonitorFacilityAvailability() {
         String name = askFacilityName();
-        ViewFacilityDetailResponse resp = client.request(
-            "viewFacilityDetail",
-            new ViewFacilityDetailRequest(name),
-            new Response<ViewFacilityDetailResponse>() {}
+        System.out.print("Monitor interval (s) = ");
+        int interval = Util.safeReadInt();
+
+        MonitorStatusResponse status = client.request(
+            "monitor", 
+            new MonitorFacilityAvailabilityRequest(name, interval),
+            new Response<MonitorStatusResponse>() {}
         );
-        System.out.println("Facility Name: " + resp.name);
-        System.out.println("Operating Hours: " + resp.operatingHours);
-        System.out.println("Address: " + resp.address);
-        System.out.println("Reviews: ");
-        for(int i = 0; i < resp.reviews.size(); i++){
-            System.out.println("[" + Integer.toString(i+1) + "] " + resp.reviews.get(i));
+
+        if(status.success){
+            System.out.println("Successfully requested to monitor, waiting for updates...");
+            client.poll(
+                new Response<MonitorUpdateResponse>() {}, 
+                Duration.ofSeconds(interval), 
+                update -> System.out.println("Update: " + update.info)
+            );
+            System.out.println("Finished monitoring");
+        }
+        else{
+            System.out.println("Failed to request to monitor");
         }
     }
 
     /**
-    * Sends a request to server to add a review for a  facility.
-    */
-    public void runAddFacilityReview(){
+     * Sends a request to server to view facility details.
+     */
+    public void runViewFacilityDetail() {
+        System.out.println("Please input the following information");
+        String name = askFacilityName();
+        ViewFacilityDetailResponse resp = client.request("viewFacilityDetail", new ViewFacilityDetailRequest(name),
+                new Response<ViewFacilityDetailResponse>() {
+                });
+        System.out.println("Facility Name: " + resp.name);
+        System.out.println("Operating Hours: " + resp.operatingHours);
+        System.out.println("Address: " + resp.address);
+        System.out.println("Reviews: ");
+        for (int i = 0; i < resp.reviews.size(); i++) {
+            System.out.println("[" + Integer.toString(i + 1) + "] " + resp.reviews.get(i));
+        }
+    }
+
+    /**
+     * Sends a request to server to add a review for a facility.
+     */
+    public void runAddFacilityReview() {
         System.out.println("Please input the following information");
         String name = askFacilityName();
         String review = askReview();
-        AddFacilityReviewResponse resp = client.request(
-            "addFacilityReview",
-            new AddFacilityReviewRequest(name, review),
-            new Response<AddFacilityReviewResponse>() {}
-        );
-        if(resp.success){
+        AddFacilityReviewResponse resp = client.request("addFacilityReview", new AddFacilityReviewRequest(name, review),
+                new Response<AddFacilityReviewResponse>() {
+                });
+        if (resp.success) {
             System.out.println("Review successfully added!");
-        }
-        else{
+        } else {
             System.out.println("Error adding review");
         }
     }
 
-    private String convertIntToDay(int i){
-        switch(i){
-            case 1:
-                return "Mon";
-            case 2:
-                return "Tue";
-            case 3:
-                return "Wed";
-            case 4:
-                return "Thu";
-            case 5:
-                return "Fri";
-            case 6:
-                return "Sat";
-            case 7:
-                return "Sun";
-            default:
-                return "Default: day not found";
+    private String convertIntToDay(int i) {
+        switch (i) {
+        case 1:
+            return "Mon";
+        case 2:
+            return "Tue";
+        case 3:
+            return "Wed";
+        case 4:
+            return "Thu";
+        case 5:
+            return "Fri";
+        case 6:
+            return "Sat";
+        case 7:
+            return "Sun";
+        default:
+            return "Default: day not found";
         }
     }
 
     private String askFacilityName() {
         int choice = 0;
         String str = "";
-        while(true){
-            System.out.print("----------------------------------------------------------------\n" +
-            "Please choose a Facility\n" +
-            "1: North Hill Gym\n");
+        while (true) {
+            System.out.print("----------------------------------------------------------------\n"
+                    + "Please choose a Facility\n" + "1: North Hill Gym\n");
             choice = Util.safeReadInt();
-            if(choice == 1){
+            if (choice == 1) {
                 str = "North Hill Gym";
                 break;
-            } 
-            else{
+            } else {
                 System.out.println("Please only choose one of the following options!");
                 continue;
             }
@@ -421,13 +414,13 @@ public class FacilityClient {
         int choice = 0;
         ArrayList<Integer> days = new ArrayList<Integer>();
         System.out.println("Please choose date (1-7 for Mon-Sun, 8 to cancel) = ");
-        while(choice!=8){
+        while (choice != 8) {
             choice = Util.safeReadInt();
-            if(choice < 1 || choice > 8){
+            if (choice < 1 || choice > 8) {
                 System.out.println("Choice must be 1-8!");
                 continue;
             }
-            if(choice != 8){
+            if (choice != 8) {
                 days.add(choice);
             }
         }
@@ -435,58 +428,43 @@ public class FacilityClient {
         return days;
     }
 
-    private static float getDuration(ArrayList<ArrayList<ArrayList<String>>> bookingList, int i, int p) {
-        //get start time of the booking
-        String startTime = bookingList.get(i).get(p).get(0) + bookingList.get(i).get(p).get(1);
-
-        //get end time of the booking
-        String endTime = bookingList.get(i).get(p).get(2) + bookingList.get(i).get(p).get(3);
-
-        //subtracting the time together will not get you the correct duration
-        //need to minus off to get the correct duration
-        //first, get the subtract multiplier (since as the time increase, the more inaccuracy)
-        //subtract multiplier will be used to remove the addtional values
-        float subtractMultiplier = Float.parseFloat(bookingList.get(i).get(p).get(2)) - Float.parseFloat(bookingList.get(i).get(p).get(0));
-        
-        //change duration to minutes format then 
-        //return duration in hour format
-        return ((Float.parseFloat(endTime) - Float.parseFloat(startTime)) - (40 * subtractMultiplier)) / 60;
-    }
-    
-    private int askBookingDay(){
+    private int askBookingDay() {
         int choice = 0;
         System.out.println("Please choose date (1-7 for Mon-Sun)");
-        choice = Util.safeReadInt();
-        if(choice < 1 || choice > 7){
-            System.out.println("Choice must be 1-7!");
+        while (true) {
+            choice = Util.safeReadInt();
+            if (choice < 1 || choice > 7) {
+                System.out.println("Choice must be 1-7!");
+                continue;
+            } else
+                break;
+
         }
         return choice;
     }
 
     private String askStartTime() {
         String s;
-        while(true){
+        while (true) {
             System.out.println("Please enter start time in 24hr format (eg. 1400 represent 2PM)");
             s = Util.readLine();
-            //check if entered start time meets required length of 4
-            if(s.length() > 4){
+            // check if entered start time meets required length of 4
+            if (s.length() != 4) {
                 System.out.println("Time must only have 4 digits!");
                 continue;
             }
-            //check if entered start time contain only numbers
-            if(Pattern.matches("[0-9]+", s) == false){
+            // check if entered start time contain only numbers
+            if (Pattern.matches("[0-9]+", s) == false) {
                 System.out.println("Time can only contain digits!");
                 continue;
             }
-            //check if entered start hour is within correct range 9-16
-            if(Integer.parseInt(s.substring(0,2)) < 9 || Integer.parseInt(s.substring(0,2)) > 16)
-            {
+            // check if entered start hour is within correct range 9-16
+            if (Integer.parseInt(s.substring(0, 2)) < 9 || Integer.parseInt(s.substring(0, 2)) > 16) {
                 System.out.println("Hour must be 09-16!");
                 continue;
             }
-            //check if entered start min is 00 or 30
-            if(Integer.parseInt(s.substring(2,4)) == 0 || Integer.parseInt(s.substring(2,4)) == 30)
-            {
+            // check if entered start min is 00 or 30
+            if (Integer.parseInt(s.substring(2, 4)) == 0 || Integer.parseInt(s.substring(2, 4)) == 30) {
                 break;
             }
             System.out.println("Minute must be 00 or 30!");
@@ -497,36 +475,60 @@ public class FacilityClient {
 
     private String askEndTime() {
         String s;
-        while(true){
+        while (true) {
             System.out.println("Please enter end time in 24hr format (eg. 1400 represent 2PM)");
             s = Util.readLine();
-            //check if entered end hour is within correct range 9-17
-            if(Integer.parseInt(s.substring(0,2)) < 9 || Integer.parseInt(s.substring(0,2)) > 17)
-            {
+            // check if entered start time meets required length of 4
+            if (s.length() != 4) {
+                System.out.println("Time must only have 4 digits!");
+                continue;
+            }
+            // check if entered start time contain only numbers
+            if (Pattern.matches("[0-9]+", s) == false) {
+                System.out.println("Time can only contain digits!");
+                continue;
+            }
+            // check if entered end hour is within correct range 9-17
+            if (Integer.parseInt(s.substring(0, 2)) < 9 || Integer.parseInt(s.substring(0, 2)) > 17) {
                 System.out.println("Hour must be 09-17!");
                 continue;
             }
-            //check for special case: since facility closes at 1700, cannot end at 1730
-            if(Integer.parseInt(s.substring(0,2)) == 17 && Integer.parseInt(s.substring(2,4)) == 30)
-            {
+            // check for special case: since facility closes at 1700, cannot end at 1730
+            if (Integer.parseInt(s.substring(0, 2)) == 17 && Integer.parseInt(s.substring(2, 4)) == 30) {
                 System.out.println("Facility closes at 17:00 hrs. Choose an earlier end time!");
                 continue;
             }
-            //check if entered end min is 00 or 30
-            if(Integer.parseInt(s.substring(2,4)) == 0 || Integer.parseInt(s.substring(2,4)) == 30)
-            {
+            // check if entered end min is 00 or 30
+            if (Integer.parseInt(s.substring(2, 4)) == 0 || Integer.parseInt(s.substring(2, 4)) == 30) {
                 break;
             }
             System.out.println("Minute must be 00 or 30!");
             continue;
-            
+
         }
         return s;
     }
 
-    
+    private boolean checkDuration(String startTime, String endTime, int offset, int offchoice) {
+        // check that start time dont go before 9am
+        int duration = offset * 30;
+        if (offchoice == 1) {
+            int subtractMultiplier = Integer.parseInt(startTime.substring(0, 2)) - 9 + 1;
+            if ((Integer.parseInt(startTime) - duration - (subtractMultiplier * 40)) < 900) {
+                return true;
+            } else
+                return false;
+        } else {
+            int additionMultiplier = 17 - Integer.parseInt(endTime.substring(0, 2)) + 1;
+            if ((Integer.parseInt(endTime) + duration + (additionMultiplier * 40)) > 1700) {
+                return true;
+            } else
+                return false;
+        }
 
-    private String askReview(){
+    }
+
+    private String askReview() {
         System.out.println("Please enter a review for this facility: ");
         String review = Util.readLine();
         return review;

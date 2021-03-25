@@ -300,17 +300,17 @@ public class FacilityService {
         return index;
     }
 
-    // private void broadcast(String info) {
-    //     purgeListeners();
-    //     System.out.println(info);
-    //     Response<MonitorUpdateResponse> resp = new Response<>(new ResponseHeader(UUID.randomUUID(), Status.OK),
-    //             Optional.of(new MonitorUpdateResponse(info)));
-    //     listeners.forEach((socketAddress, x) -> {
-    //         transport.send(socketAddress, resp);
-    //     });
-    // }
+    private void broadcast(String info) {
+        purgeListeners();
+        System.out.println(info);
+        Response<MonitorUpdateResponse> resp = new Response<>(new ResponseHeader(UUID.randomUUID(), Status.OK),
+                Optional.of(new MonitorUpdateResponse(info)));
+        listeners.forEach((socketAddress, x) -> {
+            transport.send(socketAddress, resp);
+        });
+    }
 
-    // private void purgeListeners() {
-    //     listeners.entrySet().removeIf(x -> x.getValue().isBefore(Instant.now()));
-    // }
+    private void purgeListeners() {
+        listeners.entrySet().removeIf(x -> x.getValue().isBefore(Instant.now()));
+    }
 }
