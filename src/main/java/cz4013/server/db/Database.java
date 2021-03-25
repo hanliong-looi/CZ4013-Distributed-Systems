@@ -35,7 +35,7 @@ public class Database {
 
         System.out.println("Populating some bookings in DB...");
         bookDB.put("North Hill Gym", ar);
-        BookingDetail bd = new BookingDetail("North Hill Gym", 123456, 1, 9, 30, /*10, 30,*/ 1.0);
+        BookingDetail bd = new BookingDetail("North Hill Gym", 123456, 1, 9, 30, 1.0);
         if(!addBooking("North Hill Gym", bd)){
             System.out.println("Adding of booking for NH Gym failed");
         }
@@ -62,8 +62,10 @@ public class Database {
             else{
                 bookDB.get(facName).get(day-1).add(bookingDetail);
                 for(int i = 0; i < count; i++){
-                    availDB.get(facName).get(day-1).set(startIdx + i, 1);
+                    System.out.println("setting 1 for day: " + Integer.toString(day-1));
+                    availDB.get(facName).get(day-1).set(startIdx + i, 1); 
                 }
+                bookingArrayToString(facName);
                 return true;
             }
         }
@@ -78,6 +80,7 @@ public class Database {
             for(int i = 0; i < count; i++){
                 availDB.get(facName).get(day-1).set(startIdx + i, 1);
             }
+            bookingArrayToString(facName);
             return true;
         }
     }
@@ -157,6 +160,7 @@ public class Database {
                 for(int i = 0; i < count; i++){
                     availDB.get(facName).get(bookingDetail.day-1).set(startIdx + i, 0);
                 }
+                bookingArrayToString(facName);
                 return true;
             }
             else{
@@ -201,11 +205,13 @@ public class Database {
     }
 
     public int convertStartTimeToIndex(int startHour, int startMin){
+        System.out.println("Received startHour, startMin: " + Integer.toString(startHour) + Integer.toString(startMin));
         int index = 0;
-        index = startHour - 9;
+        index = (startHour - 9) * 2;
         if(startMin == 30){
             index += 1;
         }
+        System.out.println("Converted index: " + Integer.toString(index));
         return index;
     }
 
@@ -220,14 +226,24 @@ public class Database {
     }
 
     public void initializeAvailDB(String facName){
-        ArrayList<Integer> intAr = new ArrayList<Integer>();
         ArrayList<ArrayList<Integer>> dayAr = new ArrayList<ArrayList<Integer>>();
-        for(int j = 0; j < 18; j++){
-            intAr.add(0);
-        }
         for(int i = 0; i < 7; i ++){
+            ArrayList<Integer> intAr = new ArrayList<Integer>();
+            for(int j = 0; j < 17; j++){
+                intAr.add(0);
+            }
             dayAr.add(intAr);
         }
         availDB.put(facName, dayAr);
+    }
+
+    public void bookingArrayToString(String facName){
+        for(int i = 0 ; i < 7; i ++){
+            System.out.print("[");
+            for(int j = 0; j < 17; j ++){
+                System.out.print(Integer.toString(availDB.get(facName).get(i).get(j)));
+            }
+            System.out.print("]\n");
+        }
     }
 }
