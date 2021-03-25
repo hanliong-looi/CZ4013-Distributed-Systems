@@ -155,7 +155,7 @@ public class FacilityService {
 
         BookingDetail bookingDetail =  new BookingDetail(req.facName, bookingId, req.day, req.startHour, req.startMin, duration/*req.endHour, req.endMin*/);
         boolean success = db.addBooking(req.facName, bookingDetail);
-        if(success){
+        if(!success){
             return AddFacilityBookingResponse.failed("Booking failed.");
         }
         else{

@@ -83,7 +83,7 @@ public class FacilityClient {
                             if((Math.floor(countHour) == Float.parseFloat(resp.bookingList.get(i).get(p).get(0))))
                             {
                                 //check if start min is 00 and that the current timeslot min is 00
-                                if(resp.bookingList.get(i).get(p).get(1) == "00" && countMin%2==0)
+                                if(resp.bookingList.get(i).get(p).get(1).equals("0") && j%2==0)
                                 {
                                     //printing 'x' for the number of slots booked
                                     for(int k=0; k < count; k++)
@@ -91,7 +91,7 @@ public class FacilityClient {
                                     j+=count;
                                 }   
                                 //check if start min is 30 and that the current timeslot min is 30
-                                else if(resp.bookingList.get(i).get(p).get(1) == "30" && countMin%2!=0)
+                                else if(resp.bookingList.get(i).get(p).get(1).equals("30")  && j%2!=0)
                                 {
                                     //printing 'x' for the number of slots booked
                                     for(int k=0; k < count; k++)

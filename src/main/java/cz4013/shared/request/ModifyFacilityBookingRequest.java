@@ -11,6 +11,7 @@ public class ModifyFacilityBookingRequest {
     }
 
     public ModifyFacilityBookingRequest(String facName, int day, int bookingId, int offset){
+        //offset = x number of 30mins (e.g offset=1 means postpone by 30 mins, offset=-2 means bring forward by 1 hr)
         this.facName = facName;
         this.day = day;
         this.bookingId = bookingId;
