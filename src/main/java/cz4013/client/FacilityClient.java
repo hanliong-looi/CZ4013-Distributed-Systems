@@ -123,6 +123,9 @@ public class FacilityClient {
                 else
                 {
                     // for table design
+                    for(int j = 0; j <=16; j++){
+                        System.out.print("       |");
+                    }
                     System.out.print("\n");
                     System.out.format("+------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+");
                     System.out.format("\n");
