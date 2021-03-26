@@ -1,7 +1,11 @@
 package cz4013.client;
 
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +14,7 @@ import java.util.stream.Stream;
 import javax.print.event.PrintEvent;
 
 public class schedule {
-    public static void main(String[] args) {    
+    public static void main(String[] args) throws ParseException {    
         ArrayList<String> days = new ArrayList<String>() {
             {
                 // add("Mon");
@@ -107,12 +111,15 @@ public class schedule {
         }
         System.out.print("\n");
 
-        String s = "0930";
-        System.out.print(s.substring(0,2) + "\n");
-        System.out.print(Integer.parseInt(s.substring(0,2)) + "\n");
-        System.out.print(s.substring(2,4) + "\n");
-        System.out.print(Integer.parseInt(s.substring(2,4)) + "\n");
-        System.out.print(Integer.parseInt(s));
+        // String s = "0930";
+        // System.out.print(s.substring(0,2) + "\n");
+        // System.out.print(Integer.parseInt(s.substring(0,2)) + "\n");
+        // System.out.print(s.substring(2,4) + "\n");
+        // System.out.print(Integer.parseInt(s.substring(2,4)) + "\n");
+        // System.out.print(Integer.parseInt(s));
+        
+        String finalTime = checkDuration();
+        System.out.println(finalTime);
     }
 
     private static float getDuration(ArrayList<ArrayList<ArrayList<String>>> bookingList) {
@@ -123,5 +130,17 @@ public class schedule {
         return ((Float.parseFloat(endTime) - Float.parseFloat(startTime)) - (40 * subtractMultiplier)) / 60;
     }
 
+    private static String checkDuration() throws ParseException {
+        // check that start time dont go before 9am
+        String startTime = "0930";
+        SimpleDateFormat df = new SimpleDateFormat("HHmm");
+        Date d = df.parse(startTime); 
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d);
+        cal.add(Calendar.MINUTE, -100);
+        String newTime = df.format(cal.getTime());
+
+        return newTime;
+    }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

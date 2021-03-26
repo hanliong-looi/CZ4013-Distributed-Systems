@@ -6,11 +6,12 @@ import cz4013.shared.rpc.Transport;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.text.ParseException;
 import java.time.Duration;
 import java.util.Map;
 
 public class Main {
-    public static void main(String[] args) throws SocketException{
+    public static void main(String[] args) throws SocketException, ParseException{
         
         //gets system env (inherits a clone environment of its parent process), return keys to values pairs
         Map<String, String> env = System.getenv(); 

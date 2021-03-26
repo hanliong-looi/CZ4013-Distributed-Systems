@@ -3,9 +3,13 @@ package cz4013.client;
 import cz4013.shared.request.*;
 import cz4013.shared.response.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -168,8 +172,9 @@ public class FacilityClient {
 
     /**
      * Sends a request to server to modify facility booking.
+     * @throws ParseException
      */
-    public void runModifyFacilityBooking() {
+    public void runModifyFacilityBooking() throws ParseException {
         // If client has not made any booking, end function call
         if (bookingsMade.isEmpty()) {
             System.out.println("You have not made any bookings yet.");
@@ -230,7 +235,7 @@ public class FacilityClient {
         System.out.println("[0]: Return to menu");
 
         // Ask client to select the booking to be modified
-        String chosenFacName;
+        String chosenFacName, chosenStartHour, chosenStartMin, chosenEndHour, chosenEndMin;
         int chosenDay, chosenBookingId, choice;
         while (true) {
             choice = Util.safeReadInt();
@@ -242,9 +247,28 @@ public class FacilityClient {
                 chosenFacName = vresp.bookingsMade.get(choice - 1).get(0);
                 chosenDay = Integer.valueOf(vresp.bookingsMade.get(choice - 1).get(2));
                 chosenBookingId = Integer.valueOf(vresp.bookingsMade.get(choice - 1).get(1));
+                chosenStartHour = vresp.bookingsMade.get(choice - 1).get(3);
+                chosenStartMin = vresp.bookingsMade.get(choice - 1).get(4);
+                chosenEndHour = vresp.bookingsMade.get(choice - 1).get(5);
+                chosenEndMin = vresp.bookingsMade.get(choice - 1).get(6);
                 break;
             }
         }
+        
+        if (chosenStartHour.length() == 1) {
+            chosenStartHour = "0" + chosenStartHour;
+        }
+        if (chosenStartMin.length() == 1) {
+            chosenStartMin = "0" + chosenStartMin;
+        }
+        if (chosenEndHour.length() == 1) {
+            chosenEndHour = "0" + chosenEndHour;
+        }
+        if (chosenEndMin.length() == 1) {
+            chosenEndMin = "0" + chosenEndMin;
+        }
+        String chosenStartTime = chosenStartHour + chosenStartMin;
+        String chosenEndTime = chosenEndHour + chosenEndMin;
 
         // Ask client for the details of modification
         System.out.println("Do you want to bring forward or postpone your booking?");
@@ -256,47 +280,42 @@ public class FacilityClient {
             offchoice = Util.safeReadInt();
             if (offchoice < 1 || offchoice > 2) {
                 System.out.println("Invalid choice!");
-            } else {
+            }else{ 
                 if(offchoice == 1){
-                    bf = true;
+                    if(chosenStartTime.equals("0900")){                        
+                        System.out.println("Start time cannot be earlier than 0900 AM!");
+                        System.out.println("Invalid choice!");
+                        continue;
+                    }else{
+                        bf = true;
+                    }
+                }else if(offchoice == 2){
+                    if(chosenEndTime.equals("1700")){
+                        System.out.println("End time cannot be later than 1700 PM!");
+                        System.out.println("Invalid choice!");
+                        continue;
+                    } 
                 }
                 break;
             }
         }
 
-        String startHour = vresp.bookingsMade.get(choice - 1).get(3);
-        if (startHour.length() == 1) {
-            startHour = "0" + startHour;
-        }
-        String startMin = vresp.bookingsMade.get(choice - 1).get(4);
-        if (startMin.length() == 1) {
-            startMin = "0" + startMin;
-        }
-        String startTime = startHour + startMin;
-
-        String endHour = vresp.bookingsMade.get(choice - 1).get(5);
-        if (endHour.length() == 1) {
-            endHour = "0" + endHour;
-        }
-        String endMin = vresp.bookingsMade.get(choice - 1).get(6);
-        if (endMin.length() == 1) {
-            endMin = "0" + endMin;
-        }
-        String endTime = endHour + endMin;
-
         int offset;
         while (true) {
             System.out.println("Please indicate the duration: (e.g 1 = 30 minutes, 2 = 1 hour)");
             offset = Util.safeReadInt();
-            // if(offset < 1 || offset > 16){
-            // System.out.println("Invalid duration! ");
-            // }
+            if(offset < 1 || offset > 16){
+                System.out.println("Invalid duration! ");
+            }
             // check that client does not postpone booking past 5pm or bring forward before
             // 9am
-            if (offchoice == 1 && checkDuration(startTime, endTime, offset, offchoice)) {
+            
+            if (bf && checkDuration(chosenStartTime, chosenEndTime, offset, bf)) {
                 System.out.println("Start time cannot be earlier than 0900 AM!");
-            } else if (offchoice == 2 && checkDuration(startTime, endTime, offset, offchoice)) {
+                continue;
+            } else if (!bf && checkDuration(chosenStartTime, chosenEndTime, offset, bf)) {
                 System.out.println("End time cannot be later than 1700 PM!");
+                continue;
             } else {
                 break;
             }
@@ -528,24 +547,33 @@ public class FacilityClient {
         return s;
     }
 
-    private boolean checkDuration(String startTime, String endTime, int offset, int offchoice) {
+    private boolean checkDuration(String startTime, String endTime, int offset, boolean bf) throws ParseException {
         // check that start time dont go before 9am
+        SimpleDateFormat df = new SimpleDateFormat("HHmm");
         int duration = offset * 30;
-        if (offchoice == 1) {
-            int subtractMultiplier = Integer.parseInt(startTime.substring(0, 2)) - 9 + 1;
-            if ((Integer.parseInt(startTime) - duration - (subtractMultiplier * 40)) < 900) {
+        if (bf) {
+            Date d = df.parse(startTime); 
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(d);
+            cal.add(Calendar.MINUTE, -duration);
+            String newTime = df.format(cal.getTime());
+            if(Integer.parseInt(newTime) < 900)
                 return true;
-            } else
+            else
                 return false;
         } else {
-            int additionMultiplier = 17 - Integer.parseInt(endTime.substring(0, 2)) + 1;
-            if ((Integer.parseInt(endTime) + duration + (additionMultiplier * 40)) > 1700) {
+            Date d = df.parse(endTime); 
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(d);
+            cal.add(Calendar.MINUTE, duration);
+            String newTime = df.format(cal.getTime());
+            if(Integer.parseInt(newTime) > 1700)
                 return true;
-            } else
+            else
                 return false;
         }
-
     }
+    
 
     private String askReview() {
         System.out.println("Please enter a review for this facility: ");
