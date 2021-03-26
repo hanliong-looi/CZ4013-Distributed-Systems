@@ -17,6 +17,10 @@ import java.util.regex.Pattern;
  */
 public class FacilityClient {
     private Client client;
+
+    // Hashmap listing bookings made by client
+    // Key: facility name
+    // Value: 2D array, outer array: day, inner array: list of bookingID for that day
     private HashMap<String, ArrayList<ArrayList<Integer>>> bookingsMade = new HashMap<String, ArrayList<ArrayList<Integer>>>();
 
     public FacilityClient(Client client) {
@@ -173,7 +177,6 @@ public class FacilityClient {
         }
 
         // Query list of bookings made by client
-        int length = 0;
         ArrayList<String> facNameList = new ArrayList<String>();
         ArrayList<Integer> dayList = new ArrayList<Integer>();
         ArrayList<Integer> idList = new ArrayList<Integer>();
@@ -188,15 +191,15 @@ public class FacilityClient {
                     facNameList.add(facName);
                     dayList.add(i + 1);
                     idList.add(bookingsMadeList.get(i).get(j));
-                    length++;
                 }
             }
         }
+        ViewPersonalBookingsRequest vreq = new ViewPersonalBookingsRequest(facNameList, dayList, idList);
         ViewPersonalBookingsResponse vresp = client.request("viewPersonalBookings",
-                new ViewPersonalBookingsRequest(length, facNameList, dayList, idList),
+                vreq,
                 new Response<ViewPersonalBookingsResponse>() {
                 });
-
+        
         // Print list of bookings queried by client
         String str = String.format("[1-%d]", vresp.bookingsMade.size());
         System.out.printf("Please select the booking to be modified " + str + ": \n");
@@ -248,11 +251,15 @@ public class FacilityClient {
         System.out.println("1: Bring forward");
         System.out.println("2: Postpone");
         int offchoice;
+        boolean bf = false;
         while (true) {
             offchoice = Util.safeReadInt();
             if (offchoice < 1 || offchoice > 2) {
                 System.out.println("Invalid choice!");
             } else {
+                if(offchoice == 1){
+                    bf = true;
+                }
                 break;
             }
         }
@@ -266,6 +273,7 @@ public class FacilityClient {
             startMin = "0" + startMin;
         }
         String startTime = startHour + startMin;
+
         String endHour = vresp.bookingsMade.get(choice - 1).get(5);
         if (endHour.length() == 1) {
             endHour = "0" + endHour;
@@ -292,6 +300,9 @@ public class FacilityClient {
             } else {
                 break;
             }
+        }
+        if(bf){
+            offset *= -1;
         }
 
         // Send modify facility request to server
@@ -349,6 +360,9 @@ public class FacilityClient {
         System.out.println("Operating Hours: " + resp.operatingHours);
         System.out.println("Address: " + resp.address);
         System.out.println("Reviews: ");
+        if(resp.reviews.size()==0){
+            System.out.println("There are no reviews for this facility yet.");
+        }
         for (int i = 0; i < resp.reviews.size(); i++) {
             System.out.println("[" + Integer.toString(i + 1) + "] " + resp.reviews.get(i));
         }
@@ -397,12 +411,17 @@ public class FacilityClient {
         String str = "";
         while (true) {
             System.out.print("----------------------------------------------------------------\n"
-                    + "Please choose a Facility\n" + "1: North Hill Gym\n");
+                    + "Please choose a Facility\n" + "1: North Hill Gym\n" + "2: North Hill Multi Purpose Hall\n");
             choice = Util.safeReadInt();
             if (choice == 1) {
                 str = "North Hill Gym";
                 break;
-            } else {
+            }
+            else if (choice == 2) {
+                str = "North Hill Multi Purpose Hall";
+                break;
+            }
+            else {
                 System.out.println("Please only choose one of the following options!");
                 continue;
             }
@@ -532,5 +551,17 @@ public class FacilityClient {
         System.out.println("Please enter a review for this facility: ");
         String review = Util.readLine();
         return review;
+    }
+
+    private void bookingsMadeToString(String facName){
+        System.out.println("To string: " + facName);
+        for(int i = 0; i < bookingsMade.get(facName).size(); i++){
+            System.out.print("Day: " + Integer.toString(i+1));
+            System.out.print(" Booking IDs: ");
+            for(int j = 0; j < bookingsMade.get(facName).get(i).size(); j ++){
+                System.out.print(Integer.toString(bookingsMade.get(facName).get(i).get(j)) + ",");
+            }
+            System.out.println();
+        }
     }
 }

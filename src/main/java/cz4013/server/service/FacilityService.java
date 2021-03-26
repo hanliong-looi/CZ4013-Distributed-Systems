@@ -131,12 +131,13 @@ public class FacilityService {
      */
     public ViewPersonalBookingsResponse processViewPersonalBookings(ViewPersonalBookingsRequest req){
         ArrayList<ArrayList<String>> resp = new ArrayList<ArrayList<String>>();
-        for(int i = 0; i < req.length; i++){
+        for(int i = 0; i < req.facNameList.size(); i++){
             String facName = req.facNameList.get(i);
             int day = req.dayList.get(i);
             int id = req.idList.get(i);
             BookingDetail bd = db.getOneBooking(facName, day, id);
             if(bd == null){
+                System.out.println("Booking not found, index: " + Integer.toString(i));
                 continue;
             }
             ArrayList<String> bdStr = new ArrayList<String>();
@@ -196,11 +197,13 @@ public class FacilityService {
         if(oldBookingDetail == null){
             return ModifyFacilityBookingResponse.failed("Booking doesn't exist");
         }
+        System.out.println(oldBookingDetail.toString());
         boolean deleteSuccess = db.deleteBooking(req.facName, oldBookingDetail);
         if(!deleteSuccess){
-            return ModifyFacilityBookingResponse.failed("Booking modification failed.");
+            return ModifyFacilityBookingResponse.failed("Booking modification failed, cannot delete existing booking");
         }
-        BookingDetail newBookingDetail = oldBookingDetail;
+        BookingDetail newBookingDetail = new BookingDetail(oldBookingDetail.facName, oldBookingDetail.bookingId, oldBookingDetail.day, 
+                                                            oldBookingDetail.startHour, oldBookingDetail.startMin, oldBookingDetail.duration);
         if(req.offset > 0){
             if(req.offset % 2 == 1){
                 if(oldBookingDetail.startMin == 30){
@@ -214,28 +217,31 @@ public class FacilityService {
             newBookingDetail.startHour += (req.offset / 2);
         }
         else{
+            req.offset *= -1;
             if(req.offset % 2 == 1){
                 if(oldBookingDetail.startMin == 30){
                     newBookingDetail.startMin = 0;
-                    req.offset -= 1;
                 }
                 else{
                     newBookingDetail.startMin = 30;
+                    req.offset += 1;
                 }
             }
             newBookingDetail.startHour -= (req.offset / 2);
         }
+        System.out.println(newBookingDetail.toString());
         boolean check = checkBooking(newBookingDetail.facName, newBookingDetail.day, newBookingDetail.startHour, newBookingDetail.startMin, newBookingDetail.duration);
         if(!check){
             db.addBooking(oldBookingDetail.facName, oldBookingDetail);
             return ModifyFacilityBookingResponse.failed("Booking modification failed, new booking clashes with existing bookings.");
         }
-        boolean addSuccess = db.addBooking(req.facName, newBookingDetail);
-        if(addSuccess){
-            return new ModifyFacilityBookingResponse(newBookingDetail.bookingId, addSuccess, "");
+        if(db.addBooking(newBookingDetail.facName, newBookingDetail)){
+            int bookingId = nextAvailableBookingId++;
+            newBookingDetail.bookingId = bookingId;
+            return new ModifyFacilityBookingResponse(newBookingDetail.bookingId, true, "");
         }
         else{
-            db.addBooking(newBookingDetail.facName, newBookingDetail);
+            db.addBooking(oldBookingDetail.facName, oldBookingDetail);
             return ModifyFacilityBookingResponse.failed("Booking modification failed.");
         }
     }
@@ -281,7 +287,6 @@ public class FacilityService {
         int startIdx = convertStartTimeToIndex(startHour, startMin);
         int count = (int)(duration * 2);
         for(int i = 0; i < count; i ++){
-            System.out.println("checking i");
             if(bookArray.get(0).get(startIdx+i) == 1){
                 System.out.println("timing clashed");
                 return false;

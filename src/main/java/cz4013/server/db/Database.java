@@ -26,15 +26,20 @@ public class Database {
         //Creating bookings
         System.out.println("Initializing bookings in array...");
         initializeAvailDB("North Hill Gym");
+        initializeAvailDB("North Hill Multi Purpose Hall");
 
         System.out.println("Initializing bookDB...");
         ArrayList<ArrayList<BookingDetail>> ar = new ArrayList<ArrayList<BookingDetail>>();
+        ArrayList<ArrayList<BookingDetail>> ar1 = new ArrayList<ArrayList<BookingDetail>>();
         for(int i = 0; i < 7; i++){
             ar.add(new ArrayList<BookingDetail>());
+            ar1.add(new ArrayList<BookingDetail>());
         }
 
         System.out.println("Populating some bookings in DB...");
         bookDB.put("North Hill Gym", ar);
+        bookDB.put("North Hill Multi Purpose Hall", ar1);
+
         BookingDetail bd = new BookingDetail("North Hill Gym", 123456, 1, 9, 30, 1.0);
         if(!addBooking("North Hill Gym", bd)){
             System.out.println("Adding of booking for NH Gym failed");
@@ -62,7 +67,6 @@ public class Database {
             else{
                 bookDB.get(facName).get(day-1).add(bookingDetail);
                 for(int i = 0; i < count; i++){
-                    System.out.println("setting 1 for day: " + Integer.toString(day-1));
                     availDB.get(facName).get(day-1).set(startIdx + i, 1); 
                 }
                 bookingArrayToString(facName);
@@ -154,7 +158,7 @@ public class Database {
         if(bookDB.containsKey(facName)){
             if(bookDB.get(facName).get(bookingDetail.day-1).contains(bookingDetail)){
                 int index = bookDB.get(facName).get(bookingDetail.day-1).indexOf(bookingDetail);
-                bookDB.get(facName).remove(index);
+                bookDB.get(facName).get(bookingDetail.day-1).remove(index);
                 int count = (int)(bookingDetail.duration * 2);
                 int startIdx = convertStartTimeToIndex(bookingDetail.startHour, bookingDetail.startMin);
                 for(int i = 0; i < count; i++){
@@ -211,14 +215,15 @@ public class Database {
         if(startMin == 30){
             index += 1;
         }
-        System.out.println("Converted index: " + Integer.toString(index));
         return index;
     }
 
     public void initializeFacDB(){
-        FacilityDetail fd = new FacilityDetail("North Hill Gym", "0830 - 2230", "60 Nanyang Crescent, Lvl 3, Block 19A Binjai Hall", new ArrayList<String>());
+        FacilityDetail fd = new FacilityDetail("North Hill Gym", "0900 - 1700", "60 Nanyang Crescent, Lvl 3, Block 19A Binjai Hall", new ArrayList<String>());
         facDB.put("North Hill Gym", fd);
         addReview("North Hill Gym", "Very lovely gym <3");
+        FacilityDetail fd1 = new FacilityDetail("North Hill Multi Purpose Hall", "0900 - 1700", "60 Nanyang Crescent, Lvl 3, Block 19A Binjai Hall", new ArrayList<String>());
+        facDB.put("North Hill Multi Purpose Hall", fd1);
     }
 
     public void initializeBookDB(){
