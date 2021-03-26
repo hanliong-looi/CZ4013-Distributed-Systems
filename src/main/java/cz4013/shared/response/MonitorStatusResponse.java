@@ -7,7 +7,7 @@ public class MonitorStatusResponse {
 
     }
 
-    public MonitorStatusResponse(String name, boolean success){
+    public MonitorStatusResponse(boolean success){
         this.success = success;
     }
 

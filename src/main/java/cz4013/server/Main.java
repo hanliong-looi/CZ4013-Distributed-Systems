@@ -45,7 +45,8 @@ public class Main {
             .bind("viewPersonalBookings", facService::processViewPersonalBookings, new ViewPersonalBookingsRequest(){})
             .bind("addFacilityReview", facService::processAddFacilityReview, new AddFacilityReviewRequest(){})
             .bind("addFacilityBooking", facService::processAddFacilityBooking, new AddFacilityBookingRequest(){})
-            .bind("modifyFacilityBooking", facService::processModifyFacilityBooking, new ModifyFacilityBookingRequest(){});
+            .bind("modifyFacilityBooking", facService::processModifyFacilityBooking, new ModifyFacilityBookingRequest(){})
+            .bind("monitor", facService::processMonitor, new MonitorFacilityAvailabilityRequest(){});
 
         for(; ; ){
             try(RawMessage req = serverTransport.recv()){

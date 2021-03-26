@@ -181,6 +181,7 @@ public class FacilityService {
             return AddFacilityBookingResponse.failed("Booking failed.");
         }
         else{
+            broadcast(String.format("Client added new booking %s on %s", bookingDetail.facName, convertIntToDay(bookingDetail.day)));
             return new AddFacilityBookingResponse(bookingId, true, "");
         }
     }
@@ -238,6 +239,7 @@ public class FacilityService {
         if(db.addBooking(newBookingDetail.facName, newBookingDetail)){
             int bookingId = nextAvailableBookingId++;
             newBookingDetail.bookingId = bookingId;
+            broadcast(String.format("Client modified booking %s on %s", newBookingDetail.facName, convertIntToDay(newBookingDetail.day)));
             return new ModifyFacilityBookingResponse(newBookingDetail.bookingId, true, "");
         }
         else{
@@ -305,6 +307,40 @@ public class FacilityService {
         return index;
     }
 
+    private String convertIntToDay(int i) {
+        switch (i) {
+        case 1:
+            return "Mon";
+        case 2:
+            return "Tue";
+        case 3:
+            return "Wed";
+        case 4:
+            return "Thu";
+        case 5:
+            return "Fri";
+        case 6:
+            return "Sat";
+        case 7:
+            return "Sun";
+        default:
+            return "Default: day not found";
+        }
+    }
+
+    /**
+   * Processes a monitoring request.
+   *
+   * @param req the request to be processed
+   * @return the response after processing the given request
+   */
+    public MonitorStatusResponse processMonitor(MonitorFacilityAvailabilityRequest req, SocketAddress remote) {
+        long interval = req.interval;
+        listeners.put(remote, Instant.now().plusSeconds(interval));
+        System.out.printf("User at %s starts to monitor for %d seconds\n", remote, interval);
+        return new MonitorStatusResponse(true);
+    }
+    
     private void broadcast(String info) {
         purgeListeners();
         System.out.println(info);
