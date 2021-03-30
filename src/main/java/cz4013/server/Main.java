@@ -21,7 +21,7 @@ public class Main {
 
         //returns server host; if no mapping, use 0.0.0.0
         // String host = env.getOrDefault("HOST", "0.0.0.0");
-        String host = "155.69.179.63";
+        String host = "172.20.10.2";
 
         //returns server port number, use 12740 by default
         // int port = Integer.parseInt(env.getOrDefault("PORT", "12740"));
