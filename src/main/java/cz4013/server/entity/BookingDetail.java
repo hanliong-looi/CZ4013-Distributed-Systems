@@ -36,7 +36,7 @@ public class BookingDetail {
     public String toString() {
         String str = "BookingDetail(Facility Name: " + facName + ", BookingID: " + bookingId + ", Day: " + Integer.toString(day) + 
         ", Start Time: " + Integer.toString(startHour) + ": " + Integer.toString(startMin) +
-        /*", End Time: " + Integer.toString(endHour) + ": " + Integer.toString(endMin) +*/ ", Duration: " + Double.toString(duration) + " Hours.";
+        ", Duration: " + Double.toString(duration) + " Hours.";
         return str;
     }
 }

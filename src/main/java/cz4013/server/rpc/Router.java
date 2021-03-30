@@ -93,6 +93,6 @@ public class Router {
             Response<?> resp = routeUncached(req, header);
             cache.put(header.uuid, resp);
             return resp;
-    });
-  }
+        });
+    }
 }

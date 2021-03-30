@@ -14,20 +14,27 @@ public class Main {
     public static void main(String[] args) throws SocketException, ParseException{
         
         //gets system env (inherits a clone environment of its parent process), return keys to values pairs
-        Map<String, String> env = System.getenv(); 
+        // Map<String, String> env = System.getenv(); 
         
         //returns client host/server host; if no mapping, use 0.0.0.0/127.0.0.1
-        String clientHost = env.getOrDefault("CLIENT_HOST", "0.0.0.0");
-        String serverHost = env.getOrDefault("SERVER_HOST", "127.0.0.1");
+        // String clientHost = env.getOrDefault("CLIENT_HOST", "0.0.0.0");
+        String clientHost = "0.0.0.0";
+        // String serverHost = env.getOrDefault("SERVER_HOST", "172.20.10.2");
+        String serverHost = "172.20.10.2";
         
         //returns client and server port numbers
-        int clientPort = Integer.parseInt(env.getOrDefault("CLIENT_PORT", "12741"));
-        int serverPort = Integer.parseInt(env.getOrDefault("SERVER_PORT", "12740"));
+        // int clientPort = Integer.parseInt(env.getOrDefault("CLIENT_PORT", "12741"));
+        int clientPort = 12741;
+        // int serverPort = Integer.parseInt(env.getOrDefault("SERVER_PORT", "12740"));
+        int serverPort = 12740;
 
         //set timeout of 5 secs
-        Duration timeout = Duration.ofSeconds(Integer.parseInt(env.getOrDefault("TIMEOUT_SEC", "5")));
+        // Duration timeout = Duration.ofSeconds(Integer.parseInt(env.getOrDefault("TIMEOUT_SEC", "5")));
+        Duration timeout = Duration.ofSeconds(5);
+        
         //set max no of attempts to connect
-        int maxAttempts = Integer.parseInt(env.getOrDefault("MAX_ATTEMPTS", "5"));
+        // int maxAttempts = Integer.parseInt(env.getOrDefault("MAX_ATTEMPTS", "5"));
+        int maxAttempts = 5;
 
         //Inetsocket: Creates a socket address from a hostname and a port number.
         //Datagramsocket: Creates a datagram socket, bound to the specified local socket address.

@@ -24,7 +24,7 @@ public class UDPClient {
             clientSocket.setSoTimeout(5000);
             
             // Get the IP address of the server
-            InetAddress serverIPAddress = InetAddress.getByName("172.20.236.89");
+            InetAddress serverIPAddress = InetAddress.getByName("172.20.10.2");
 
             // Get the IP address and hostname of the client
             InetAddress clientIPAddress = InetAddress.getLocalHost();

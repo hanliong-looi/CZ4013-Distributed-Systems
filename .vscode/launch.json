@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch UDPClient",
+            "request": "launch",
+            "mainClass": "cz4013.client.UDPClient",
+            "projectName": "cz4013"
+        },
+        {
+            "type": "java",
+            "name": "Launch UDPServer",
+            "request": "launch",
+            "mainClass": "cz4013.server.UDPServer",
+            "projectName": "cz4013"
+        },
+        {
+            "type": "java",
             "name": "Launch schedule",
             "request": "launch",
             "mainClass": "cz4013.client.schedule",
