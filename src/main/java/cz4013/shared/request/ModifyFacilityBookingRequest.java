@@ -1,5 +1,8 @@
 package cz4013.shared.request;
 
+/**
+ * The request to modify facility booking.
+ */
 public class ModifyFacilityBookingRequest {
     public String facName;
     public int day;

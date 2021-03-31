@@ -1,5 +1,8 @@
 package cz4013.shared.request;
 
+/**
+ * The request to monitor availability of a facility.
+ */
 public class MonitorFacilityAvailabilityRequest {
     public String name; 
     public int interval;

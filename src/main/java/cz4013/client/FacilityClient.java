@@ -91,7 +91,7 @@ public class FacilityClient {
                 for (int j = 0; j < 17; j++) {
                     // if there is a booking in that slot
                     if (arrayResp.availArray.get(i).get(j) == 1) {
-                        System.out.print("  hi   |");
+                        System.out.print("   x   |");
                     }
                     // if no booking in that slow
                     else {
@@ -282,6 +282,7 @@ public class FacilityClient {
                 System.out.println("Invalid choice!");
             }else{ 
                 if(offchoice == 1){
+                    //start time cannot be earlier than 9AM
                     if(chosenStartTime.equals("0900")){                        
                         System.out.println("Start time cannot be earlier than 0900 AM!");
                         System.out.println("Invalid choice!");
@@ -290,6 +291,7 @@ public class FacilityClient {
                         bf = true;
                     }
                 }else if(offchoice == 2){
+                    //end time cannot be later than 5pm
                     if(chosenEndTime.equals("1700")){
                         System.out.println("End time cannot be later than 1700 PM!");
                         System.out.println("Invalid choice!");
@@ -307,9 +309,7 @@ public class FacilityClient {
             if(offset < 1 || offset > 16){
                 System.out.println("Invalid duration! ");
             }
-            // check that client does not postpone booking past 5pm or bring forward before
-            // 9am
-            
+            // check that client does not postpone booking past 5pm or bring forward before 9am
             if (bf && checkDuration(chosenStartTime, chosenEndTime, offset, bf)) {
                 System.out.println("Start time cannot be earlier than 0900 AM!");
                 continue;
@@ -548,9 +548,9 @@ public class FacilityClient {
     }
 
     private boolean checkDuration(String startTime, String endTime, int offset, boolean bf) throws ParseException {
-        // check that start time dont go before 9am
         SimpleDateFormat df = new SimpleDateFormat("HHmm");
         int duration = offset * 30;
+        // check that start time dont go before 9am
         if (bf) {
             Date d = df.parse(startTime); 
             Calendar cal = Calendar.getInstance();
@@ -562,6 +562,7 @@ public class FacilityClient {
             else
                 return false;
         } else {
+            // check that end time dont go beyond 5pm
             Date d = df.parse(endTime); 
             Calendar cal = Calendar.getInstance();
             cal.setTime(d);

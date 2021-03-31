@@ -2,6 +2,9 @@ package cz4013.shared.request;
 
 import java.util.ArrayList;
 
+/**
+ * The request to view personal bookings.
+ */
 public class ViewPersonalBookingsRequest {
     public ArrayList<String> facNameList;
     public ArrayList<Integer> dayList;

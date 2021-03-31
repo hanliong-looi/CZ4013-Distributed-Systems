@@ -1,5 +1,8 @@
 package cz4013.shared.request;
 
+/**
+ * The request to add facility review.
+ */
 public class AddFacilityReviewRequest {
     public String facName;
     public String review;
