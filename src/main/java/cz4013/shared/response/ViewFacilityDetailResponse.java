@@ -2,6 +2,10 @@ package cz4013.shared.response;
 
 import java.util.ArrayList;
 
+/**
+ * The response from the server to client for viewing information of a facility
+ */
+
 public class ViewFacilityDetailResponse {
     public String name;
     public String operatingHours;

@@ -1,5 +1,9 @@
 package cz4013.shared.response;
 
+/**
+ * The response from the server to client after a facility booking is modified
+ */
+
 public class ModifyFacilityBookingResponse {
     public int bookingId;
     public boolean success;

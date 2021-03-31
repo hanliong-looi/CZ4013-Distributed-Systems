@@ -23,7 +23,7 @@ public class Database {
         System.out.println("Initializing facilities in DB...");
         initializeFacDB();
 
-        //Creating bookings
+        // Creating bookings
         System.out.println("Initializing bookings in array...");
         initializeAvailDB("North Hill Gym");
         initializeAvailDB("North Hill Multi Purpose Hall");
@@ -60,7 +60,11 @@ public class Database {
         int day = bookingDetail.day;
         int count = (int)(bookingDetail.duration * 2);
         int startIdx = convertStartTimeToIndex(bookingDetail.startHour, bookingDetail.startMin);
+
+        // Checks if the facility name already exists in the HashMap
         if(bookDB.containsKey(facName)){
+
+            // If the booking detail already exists in bookDB, return false
             if(bookDB.get(facName).get(day-1).contains(bookingDetail)){
                 return false;
             }
@@ -69,10 +73,12 @@ public class Database {
                 for(int i = 0; i < count; i++){
                     availDB.get(facName).get(day-1).set(startIdx + i, 1); 
                 }
-                bookingArrayToString(facName);
+                // bookingArrayToString(facName);
                 return true;
             }
         }
+
+        // If the facility name doesn't exist, initialize an empty 2D array of booking detail for the facility and insert the key-value pair
         else{
             ArrayList<ArrayList<BookingDetail>> ar = new ArrayList<ArrayList<BookingDetail>>();
             for(int i = 0; i < 7; i++){
@@ -84,7 +90,7 @@ public class Database {
             for(int i = 0; i < count; i++){
                 availDB.get(facName).get(day-1).set(startIdx + i, 1);
             }
-            bookingArrayToString(facName);
+            // bookingArrayToString(facName);
             return true;
         }
     }
@@ -164,7 +170,7 @@ public class Database {
                 for(int i = 0; i < count; i++){
                     availDB.get(facName).get(bookingDetail.day-1).set(startIdx + i, 0);
                 }
-                bookingArrayToString(facName);
+                // bookingArrayToString(facName);
                 return true;
             }
             else{
@@ -208,6 +214,12 @@ public class Database {
         }
     }
 
+    /**
+     * Given the start hour and start min, convert the time to the positional index in the availability array
+     * @param startHour
+     * @param startMin
+     * @return positional index
+     */
     public int convertStartTimeToIndex(int startHour, int startMin){
         System.out.println("Received startHour, startMin: " + Integer.toString(startHour) + Integer.toString(startMin));
         int index = 0;
@@ -218,6 +230,9 @@ public class Database {
         return index;
     }
 
+    /**
+     * Initialize the facilities and their information
+     */
     public void initializeFacDB(){
         FacilityDetail fd = new FacilityDetail("North Hill Gym", "0900 - 1700", "60 Nanyang Crescent, Lvl 3, Block 19A Binjai Hall", new ArrayList<String>());
         facDB.put("North Hill Gym", fd);
@@ -226,10 +241,10 @@ public class Database {
         facDB.put("North Hill Multi Purpose Hall", fd1);
     }
 
-    public void initializeBookDB(){
-        
-    }
-
+    /**
+     * Initialize the availability array for given the facility name
+     * @param facName
+     */
     public void initializeAvailDB(String facName){
         ArrayList<ArrayList<Integer>> dayAr = new ArrayList<ArrayList<Integer>>();
         for(int i = 0; i < 7; i ++){
@@ -242,6 +257,9 @@ public class Database {
         availDB.put(facName, dayAr);
     }
 
+    /** 
+     * Convert the booking array to String format to be printed on the console for debugging
+     */
     public void bookingArrayToString(String facName){
         for(int i = 0 ; i < 7; i ++){
             System.out.print("[");

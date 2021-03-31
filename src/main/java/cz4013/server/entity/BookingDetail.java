@@ -9,8 +9,6 @@ public class BookingDetail {
     public int day;
     public int startHour;
     public int startMin;
-    // public int endHour;
-    // public int endMin;
     public double duration;
 
     /**
@@ -21,14 +19,12 @@ public class BookingDetail {
      * @param day     day of the booking (e.g 1 = Mon, 2 = Tue, ..., 7 = Sun)
      * @param time    time of the booking (e.g "0930 - 1030")
      */
-    public BookingDetail(String facName, int bookingId, int day, int startHour, int startMin, /*int endHour, int endMin,*/ double duration) {
+    public BookingDetail(String facName, int bookingId, int day, int startHour, int startMin, double duration) {
         this.facName = facName;
         this.bookingId = bookingId;
         this.day = day;
         this.startHour = startHour;
         this.startMin = startMin;
-        // this.endHour = endHour;
-        // this.endMin = endMin;
         this.duration = duration;
     }
 

@@ -298,6 +298,12 @@ public class FacilityService {
         return true;
     }
 
+    /**
+     * Given a start time and start min, return the index of the time on the availability array
+     * @param startHour
+     * @param startMin
+     * @return
+     */
     public int convertStartTimeToIndex(int startHour, int startMin){
         int index = 0;
         index = (startHour - 9) * 2;
@@ -307,6 +313,11 @@ public class FacilityService {
         return index;
     }
 
+    /**
+     * Converts an integer to its corresponding day of the week
+     * @param i
+     * @return
+     */
     private String convertIntToDay(int i) {
         switch (i) {
         case 1:
@@ -341,6 +352,10 @@ public class FacilityService {
         return new MonitorStatusResponse(true);
     }
     
+    /**
+     * Sends a message to all clients that have requested to monitor the particular facility
+     * @param info the message to be displayed to the clients
+     */
     private void broadcast(String info) {
         purgeListeners();
         System.out.println(info);
@@ -351,6 +366,9 @@ public class FacilityService {
         });
     }
 
+    /**
+     * Checks if the client's monitoring duration has ran out.
+     */
     private void purgeListeners() {
         listeners.entrySet().removeIf(x -> x.getValue().isBefore(Instant.now()));
     }

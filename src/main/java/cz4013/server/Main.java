@@ -16,23 +16,13 @@ import java.util.Map;
 
 public class Main {
     public static void main(String[] args) throws SocketException{
-        //gets system env (inherits a clone environment of its parent process), return keys to values pairs
-        // Map<String, String> env = System.getenv();
-
-        //returns server host; if no mapping, use 0.0.0.0
-        // String host = env.getOrDefault("HOST", "0.0.0.0");
         String host = "172.20.10.2";
-
-        //returns server port number, use 12740 by default
-        // int port = Integer.parseInt(env.getOrDefault("PORT", "12740"));
         int port = 12740;
 
-        //determines whether the server uses at-least-once or at-most-once semantics, use ALO semantics as default
-        // boolean atLeastOnce = Integer.parseInt(env.getOrDefault("AT_LEAST_ONCE", "0")) != 1;
+        //determines whether the server uses at-least-once or at-most-once semantics
         boolean atLeastOnce = true;
         
-        // double packetLossProb = Double.parseDouble(env.getOrDefault("PACKET_LOSS_PROB", "0.0"));
-        //set probability of packet loss to simulate loss of message during transmission, default is 0
+        //set probability of packet loss to simulate loss of message during transmission
         double packetLossProb = 0.3;
 
         BufferPool pool = new BufferPool(8192, 1024);

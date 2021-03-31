@@ -1,5 +1,9 @@
 package cz4013.shared.response;
 
+/**
+ * The response from the server to client after adding a review for facility
+ */
+
 public class AddFacilityReviewResponse {
     public boolean success;
     public String errorMessage;

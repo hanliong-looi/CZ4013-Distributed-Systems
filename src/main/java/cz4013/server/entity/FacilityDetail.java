@@ -24,6 +24,10 @@ public class FacilityDetail {
         this.reviews = reviews;
     }
 
+    /**
+     * Appends a review to the list of reviews for the facility
+     * @param review review for the facility
+     */
     public void addReview(String review){
         this.reviews.add(review);
     }
